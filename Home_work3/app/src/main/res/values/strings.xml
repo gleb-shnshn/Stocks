@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Homework 9 Network</string>
+    <string name="perform_request">Выполнить запрос</string>
+    <string name="result_request">Результат запроса:</string>
+    <string-array name="city_array">
+        <item>Moscow,RU</item>
+        <item>Sochi,RU</item>
+        <item>Vladivostok,RU</item>
+        <item>Chelyabinsk,RU</item>
+    </string-array>
+</resources>
