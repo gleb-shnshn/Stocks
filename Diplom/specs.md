@@ -71,7 +71,7 @@ Mockup:
 
 - При нажатии на “Создать аккаунт” переходим на экран “Регистрация”
 
-API: [/api/auth/signup](https://app.swaggerhub.com/apis/enp0s23/stocks/0.0.1#/Auth/signUp)
+API: [/api/auth/signin](https://app.swaggerhub.com/apis/enp0s23/stocks/0.0.1#/Auth/signIn)
 
 Mockup:
 ![](2_auth.png)
@@ -91,7 +91,7 @@ Mockup:
   - при успешном ответе необходимо сохранить авторизационные данные в персистентное хранилище и перейти на экран “Портфель”
   - при получении ошибки, показать ошибку
 
-API: [/api/auth/signin](https://app.swaggerhub.com/apis/enp0s23/stocks/0.0.1#/Auth/signIn)
+API: [/api/auth/signup](https://app.swaggerhub.com/apis/enp0s23/stocks/0.0.1#/Auth/signUp)
 
 Mockup: 
 ![](3_register.png)
