@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Diplom</string>
+    <string name="server_url">https://stockstore.herokuapp.com/</string>
+</resources>
