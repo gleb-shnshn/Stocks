@@ -9,7 +9,7 @@ public class AuthErrorResponse {
     @SerializedName("invalidFields")
     InvalidField[] invalidFields;
 
-    public class InvalidField {
+    class InvalidField {
         @SerializedName("field")
         String field;
         @SerializedName("message")

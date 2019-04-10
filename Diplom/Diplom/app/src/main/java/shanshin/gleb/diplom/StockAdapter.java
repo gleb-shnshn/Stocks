@@ -11,13 +11,20 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> {
-    ArrayList<Stock> stocks;
-    LayoutInflater inflater;
+    private ArrayList<Stock> stocks;
+    private LayoutInflater inflater;
+
     StockAdapter() {
+        stocks = new ArrayList<>();
     }
+
     StockAdapter(Context ctx, ArrayList<Stock> stocks) {
         this.inflater = LayoutInflater.from(ctx);
         this.stocks = stocks;
+        this.stocks.addAll(stocks);
+        this.stocks.addAll(stocks);
+        this.stocks.addAll(stocks);
+        this.stocks.addAll(stocks);
         notifyDataSetChanged();
     }
 
@@ -30,14 +37,17 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull StockAdapter.ViewHolder viewHolder, int i) {
         Stock stock = stocks.get(i);
+        if (stock.name.length() > 10) {
+            stock.name = stock.name.substring(0, 9) + "..";
+        }
         viewHolder.name.setText(stock.name);
         viewHolder.count.setText(stock.count + " шт.");
         viewHolder.price.setText(stock.price + " руб.");
-        viewHolder.delta.setTextColor(stock.delta < 0 ? inflater.getContext().getResources().getColor(R.color.errorColor) :
+        viewHolder.delta.setTextColor(stock.priceDelta < 0 ? inflater.getContext().getResources().getColor(R.color.errorColor) :
                 inflater.getContext().getResources().getColor(R.color.colorPrimary));
-        viewHolder.line.setBackground(stock.delta < 0 ? inflater.getContext().getResources().getDrawable(R.color.errorColor) :
+        viewHolder.line.setBackground(stock.priceDelta < 0 ? inflater.getContext().getResources().getDrawable(R.color.errorColor) :
                 inflater.getContext().getResources().getDrawable(R.color.colorPrimary));
-        viewHolder.delta.setText((stock.delta < 0 ? "↓" : "↑") + stock.delta + " руб(" + stock.delta / stock.price + "%)");
+        viewHolder.delta.setText((stock.priceDelta < 0 ? "↓" : "↑") + stock.priceDelta + " руб(" + String.format("%.5f", stock.priceDelta / stock.price) + "%)");
     }
 
     @Override
@@ -45,7 +55,7 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
         return stocks.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
         final TextView name, count, price, delta;
         final View line;
 

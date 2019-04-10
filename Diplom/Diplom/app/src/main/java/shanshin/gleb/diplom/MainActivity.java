@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                                 App.getInstance().getRetrofit().responseBodyConverter(AuthErrorResponse.class, new Annotation[0]);
                         AuthErrorResponse errorResponse = errorConverter.convert(response.errorBody());
                         for (InvalidField invalidField : errorResponse.invalidFields) {
-                            showError(invalidField.message);
+                            App.showError(getApplicationContext(),invalidField.message);
                         }
                     } else {
                         AuthSuccessResponse successResponse = response.body();
@@ -118,11 +118,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void saveTokens(String accessToken, String refreshToken) {
-        SharedPreferences sPref = getPreferences(MODE_PRIVATE);
+        SharedPreferences sPref = getSharedPreferences("tokens", MODE_PRIVATE);
         Editor ed = sPref.edit();
         ed.putString("accessToken", accessToken);
         ed.putString("refreshToken", refreshToken);
-        ed.apply();
+        ed.commit();
     }
 
     public void clickToLogin(View view) {
@@ -139,16 +139,6 @@ public class MainActivity extends AppCompatActivity {
         return new LoginAndPassword(login, password);
     }
 
-    private void showError(String errorMessage) {
-        new StyleableToast
-                .Builder(getApplicationContext())
-                .text(errorMessage)
-                .cornerRadius(5)
-                .textSize(13)
-                .textColor(getResources().getColor(R.color.white))
-                .backgroundColor(getResources().getColor(R.color.errorColor))
-                .show();
-    }
 
     private void log(String msg) {
         Log.d("tokens", msg);

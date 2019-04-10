@@ -1,9 +1,11 @@
 package shanshin.gleb.diplom;
 
 import android.app.Application;
+import android.content.Context;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.muddzdev.styleabletoastlibrary.StyleableToast;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -33,5 +35,16 @@ public class App extends Application {
 
     public Retrofit getRetrofit() {
         return retrofit;
+    }
+
+    public static void showError(Context context, String errorMessage) {
+        new StyleableToast
+                .Builder(context)
+                .text(errorMessage)
+                .cornerRadius(5)
+                .textSize(13)
+                .textColor(context.getResources().getColor(R.color.white))
+                .backgroundColor(context.getResources().getColor(R.color.errorColor))
+                .show();
     }
 }

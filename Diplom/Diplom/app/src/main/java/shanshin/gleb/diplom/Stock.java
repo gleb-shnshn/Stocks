@@ -1,16 +1,28 @@
 package shanshin.gleb.diplom;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Stock {
+
+    @SerializedName("id")
+    int id;
+
+    @SerializedName("code")
+    String code;
+
+    @SerializedName("name")
     String name;
-    int count;
+
+    @SerializedName("iconUrl")
+    String iconUrl;
+
+    @SerializedName("price")
     float price;
-    float delta;
 
-    public Stock(String name, int count, float price, float delta) {
-        this.name = name;
-        this.count = count;
-        this.price = price;
-        this.delta = delta;
+    @SerializedName("priceDelta")
+    float priceDelta;
 
-    }
+    @SerializedName("count")
+    int count;
+
 }
