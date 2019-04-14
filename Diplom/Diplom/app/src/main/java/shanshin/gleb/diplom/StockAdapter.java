@@ -9,20 +9,21 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import shanshin.gleb.diplom.model.Stock;
 
 public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> {
-    private ArrayList<Stock> stocks;
+    private List<Stock> stocks;
     private LayoutInflater inflater;
 
     StockAdapter() {
         stocks = new ArrayList<>();
     }
 
-    StockAdapter(Context ctx, ArrayList<Stock> stocks) {
+    StockAdapter(Context ctx, List<Stock> stocks) {
         this.inflater = LayoutInflater.from(ctx);
         this.stocks = stocks;
-        this.stocks.addAll(stocks);
-        this.stocks.addAll(stocks);
         this.stocks.addAll(stocks);
         this.stocks.addAll(stocks);
         notifyDataSetChanged();
@@ -48,6 +49,11 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
         viewHolder.line.setBackground(stock.priceDelta < 0 ? inflater.getContext().getResources().getDrawable(R.color.errorColor) :
                 inflater.getContext().getResources().getDrawable(R.color.colorPrimary));
         viewHolder.delta.setText((stock.priceDelta < 0 ? "↓" : "↑") + stock.priceDelta + " руб(" + String.format("%.5f", stock.priceDelta / stock.price) + "%)");
+    }
+
+    public void setStocks(ArrayList<Stock> newStocks) {
+        stocks = newStocks;
+        notifyDataSetChanged();
     }
 
     @Override

@@ -1,4 +1,4 @@
-package shanshin.gleb.diplom;
+package shanshin.gleb.diplom.model;
 
 import com.google.gson.annotations.SerializedName;
 

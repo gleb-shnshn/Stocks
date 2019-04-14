@@ -1,13 +1,13 @@
-package shanshin.gleb.diplom;
+package shanshin.gleb.diplom.responses;
 
 import com.google.gson.annotations.SerializedName;
 
 public class DefaultErrorResponse {
 
     @SerializedName("code")
-    String code;
+    public String code;
 
     @SerializedName("message")
-    String message;
+    public String message;
 
 }

@@ -4,7 +4,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
-import shanshin.gleb.diplom.AuthErrorResponse.InvalidField;
+import shanshin.gleb.diplom.api.AuthApi;
+import shanshin.gleb.diplom.model.LoginAndPassword;
+import shanshin.gleb.diplom.responses.AuthErrorResponse;
+import shanshin.gleb.diplom.responses.AuthErrorResponse.InvalidField;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,16 +16,14 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.muddzdev.styleabletoastlibrary.StyleableToast;
-
 import java.lang.annotation.Annotation;
-import java.util.HashMap;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Converter;
 import retrofit2.Response;
+import shanshin.gleb.diplom.responses.AuthSuccessResponse;
 
 public class MainActivity extends AppCompatActivity {
     EditText loginField, passwordField;
@@ -65,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 updateContentViewOnUiThread(R.layout.activity_login);
-                //switchToStockCase();
             }
         }).start();
     }
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                                 App.getInstance().getRetrofit().responseBodyConverter(AuthErrorResponse.class, new Annotation[0]);
                         AuthErrorResponse errorResponse = errorConverter.convert(response.errorBody());
                         for (InvalidField invalidField : errorResponse.invalidFields) {
-                            App.showError(getApplicationContext(),invalidField.message);
+                            App.getInstance().showError(invalidField.message);
                         }
                     } else {
                         AuthSuccessResponse successResponse = response.body();

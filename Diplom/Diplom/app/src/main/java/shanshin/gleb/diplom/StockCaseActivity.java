@@ -1,51 +1,53 @@
 package shanshin.gleb.diplom;
 
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
+import android.support.v7.widget.Toolbar;
 
 import com.ethanhua.skeleton.RecyclerViewSkeletonScreen;
 import com.ethanhua.skeleton.Skeleton;
 import com.ethanhua.skeleton.ViewSkeletonScreen;
-import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
-import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
-import com.github.ksoichiro.android.observablescrollview.ScrollState;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Converter;
 import retrofit2.Response;
+import shanshin.gleb.diplom.api.AccountApi;
+import shanshin.gleb.diplom.responses.DefaultErrorResponse;
+import shanshin.gleb.diplom.responses.InfoResponse;
 
 
-public class StockCaseActivity extends AppCompatActivity implements ObservableScrollViewCallbacks {
-    ObservableRecyclerView stocksView;
+public class StockCaseActivity extends AppCompatActivity {
+    RecyclerView stocksView;
     RecyclerViewSkeletonScreen skeletonStocks;
     ViewSkeletonScreen skeletonHeader;
     TextView nameView, balanceView;
     FloatingActionButton fabView;
+    Toolbar toolbar;
     CardView cardView;
+    BottomSheetDialog bottomSheetDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stock_case);
         initializeViews();
-        setSkeletonLoading(stocksView, cardView);
+
+        bottomSheetDialog.show();
+        setSkeletonLoading();
         getInfoAboutAccount();
     }
 
@@ -53,9 +55,12 @@ public class StockCaseActivity extends AppCompatActivity implements ObservableSc
         stocksView = findViewById(R.id.stocksView);
         cardView = findViewById(R.id.card);
         nameView = findViewById(R.id.name);
+        toolbar = findViewById(R.id.main_toolbar);
         balanceView = findViewById(R.id.balance);
         fabView = findViewById(R.id.addFloatingButton);
-        stocksView.setScrollViewCallbacks(this);
+        bottomSheetDialog = new BottomSheetDialog(this);
+        View sheetView = getLayoutInflater().inflate(R.layout.bottom_dialog_layout, null);
+        bottomSheetDialog.setContentView(sheetView);
         stocksView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -68,7 +73,7 @@ public class StockCaseActivity extends AppCompatActivity implements ObservableSc
 
     private void getInfoAboutAccount() {
         AccountApi accountApi = App.getInstance().getRetrofit().create(AccountApi.class);
-        accountApi.getAccountInfo(getAccessToken()).enqueue(new Callback<InfoResponse>() {
+        accountApi.getAccountInfo(App.getInstance().getAccessToken()).enqueue(new Callback<InfoResponse>() {
             @Override
             public void onResponse(Call<InfoResponse> call, Response<InfoResponse> response) {
                 try {
@@ -76,7 +81,7 @@ public class StockCaseActivity extends AppCompatActivity implements ObservableSc
                         Converter<ResponseBody, DefaultErrorResponse> errorConverter =
                                 App.getInstance().getRetrofit().responseBodyConverter(DefaultErrorResponse.class, new Annotation[0]);
                         DefaultErrorResponse errorResponse = errorConverter.convert(response.errorBody());
-                        App.showError(getApplicationContext(), errorResponse.message);
+                        App.getInstance().showError(errorResponse.message);
                     } else {
                         InfoResponse infoResponse = response.body();
                         cancelSkeletonLoading();
@@ -98,45 +103,31 @@ public class StockCaseActivity extends AppCompatActivity implements ObservableSc
         nameView.setText(infoResponse.name);
         balanceView.setText(infoResponse.balance + "\u20BD");
         stocksView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        stocksView.setAdapter(new StockAdapter(getApplicationContext(), new ArrayList<>(infoResponse.stocks)));
+        stocksView.setAdapter(new StockAdapter(getApplicationContext(), infoResponse.stocks));
 
     }
 
     private void cancelSkeletonLoading() {
+        toolbar.setVisibility(View.VISIBLE);
         skeletonHeader.hide();
         skeletonStocks.hide();
     }
 
-    public void setSkeletonLoading(RecyclerView stockList, CardView header) {
+    public void setSkeletonLoading() {
+        toolbar.setVisibility(View.GONE);
         stocksView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        skeletonHeader = Skeleton.bind(header)
+        skeletonHeader = Skeleton.bind(cardView)
                 .load(R.layout.header_skeleton)
                 .duration(1200)
                 .show();
-        skeletonStocks = Skeleton.bind(stockList)
+        skeletonStocks = Skeleton.bind(stocksView)
                 .load(R.layout.stock_skeleton_item)
                 .duration(1200)
                 .adapter(new StockAdapter())
                 .show();
     }
 
-    public String getAccessToken() {
-        SharedPreferences sPref = getSharedPreferences("tokens", MODE_PRIVATE);
-        return sPref.getString("accessToken", "");
-    }
-
-    @Override
-    public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
-
-    }
-
-    @Override
-    public void onDownMotionEvent() {
-
-    }
-
-    @Override
-    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
-
+    public void switchToSearchStocks(View view) {
+        startActivity(new Intent(this, StockSearchActivity.class));
     }
 }

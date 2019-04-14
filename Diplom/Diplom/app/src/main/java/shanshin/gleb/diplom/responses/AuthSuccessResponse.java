@@ -1,12 +1,12 @@
-package shanshin.gleb.diplom;
+package shanshin.gleb.diplom.responses;
 
 import com.google.gson.annotations.SerializedName;
 
 public class AuthSuccessResponse {
 
     @SerializedName("accessToken")
-    String accessToken;
+    public String accessToken;
 
     @SerializedName("refreshToken")
-    String refreshToken;
+    public String refreshToken;
 }

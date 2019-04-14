@@ -22,6 +22,9 @@
         <activity
             android:name=".StockCaseActivity"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".StockSearchActivity"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

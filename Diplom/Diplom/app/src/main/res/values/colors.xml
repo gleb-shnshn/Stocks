@@ -7,4 +7,5 @@
     <color name="white">#FFF</color>
     <color name="errorColor">#f44336</color>
     <color name="light_grey">#e4e4e4</color>
+    <color name="transparent">#00000000</color>
 </resources>

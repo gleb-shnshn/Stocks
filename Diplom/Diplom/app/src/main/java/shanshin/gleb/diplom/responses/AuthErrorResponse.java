@@ -1,18 +1,18 @@
-package shanshin.gleb.diplom;
+package shanshin.gleb.diplom.responses;
 
 import com.google.gson.annotations.SerializedName;
 
 public class AuthErrorResponse {
     @SerializedName("code")
-    String code;
+    public String code;
 
     @SerializedName("invalidFields")
-    InvalidField[] invalidFields;
+    public InvalidField[] invalidFields;
 
-    class InvalidField {
+    public class InvalidField {
         @SerializedName("field")
-        String field;
+        public String field;
         @SerializedName("message")
-        String message;
+        public String message;
     }
 }

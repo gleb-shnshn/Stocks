@@ -2,6 +2,7 @@ package shanshin.gleb.diplom;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -28,6 +29,10 @@ public class App extends Application {
                 .build();
 
     }
+    public String getAccessToken(){
+        SharedPreferences sPref = getSharedPreferences("tokens", MODE_PRIVATE);
+        return sPref.getString("accessToken", "");
+    }
 
     public static App getInstance() {
         return instance;
@@ -37,14 +42,14 @@ public class App extends Application {
         return retrofit;
     }
 
-    public static void showError(Context context, String errorMessage) {
+    public void showError(String errorMessage) {
         new StyleableToast
-                .Builder(context)
+                .Builder(this)
                 .text(errorMessage)
                 .cornerRadius(5)
                 .textSize(13)
-                .textColor(context.getResources().getColor(R.color.white))
-                .backgroundColor(context.getResources().getColor(R.color.errorColor))
+                .textColor(getResources().getColor(R.color.white))
+                .backgroundColor(getResources().getColor(R.color.errorColor))
                 .show();
     }
 }
