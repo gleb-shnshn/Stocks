@@ -1,6 +1,7 @@
 package shanshin.gleb.diplom;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,17 +16,28 @@ import shanshin.gleb.diplom.model.Stock;
 
 public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> {
     private List<Stock> stocks;
+    private StockContatiner stockContatiner;
     private LayoutInflater inflater;
+    private int downColor, upColor;
+    private Drawable upDrawable, downDrawable;
 
     StockAdapter() {
         stocks = new ArrayList<>();
     }
 
     StockAdapter(Context ctx, List<Stock> stocks) {
+        this.stockContatiner = (StockContatiner) ctx;
         this.inflater = LayoutInflater.from(ctx);
         this.stocks = stocks;
         this.stocks.addAll(stocks);
         this.stocks.addAll(stocks);
+
+        this.upColor = inflater.getContext().getResources().getColor(R.color.colorPrimary);
+        this.downColor = inflater.getContext().getResources().getColor(R.color.errorColor);
+
+        this.upDrawable = inflater.getContext().getResources().getDrawable(R.color.colorPrimary);
+        this.downDrawable = inflater.getContext().getResources().getDrawable(R.color.errorColor);
+
         notifyDataSetChanged();
     }
 
@@ -41,13 +53,12 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
         if (stock.name.length() > 10) {
             stock.name = stock.name.substring(0, 9) + "..";
         }
+        viewHolder.stock = stock;
         viewHolder.name.setText(stock.name);
         viewHolder.count.setText(stock.count + " шт.");
         viewHolder.price.setText(stock.price + " руб.");
-        viewHolder.delta.setTextColor(stock.priceDelta < 0 ? inflater.getContext().getResources().getColor(R.color.errorColor) :
-                inflater.getContext().getResources().getColor(R.color.colorPrimary));
-        viewHolder.line.setBackground(stock.priceDelta < 0 ? inflater.getContext().getResources().getDrawable(R.color.errorColor) :
-                inflater.getContext().getResources().getDrawable(R.color.colorPrimary));
+        viewHolder.delta.setTextColor(stock.priceDelta < 0 ? downColor : upColor);
+        viewHolder.line.setBackground(stock.priceDelta < 0 ? downDrawable : upDrawable);
         viewHolder.delta.setText((stock.priceDelta < 0 ? "↓" : "↑") + stock.priceDelta + " руб(" + String.format("%.5f", stock.priceDelta / stock.price) + "%)");
     }
 
@@ -61,9 +72,14 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
         return stocks.size();
     }
 
+    public List<Stock> getStocks() {
+        return stocks;
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
         final TextView name, count, price, delta;
         final View line;
+        Stock stock;
 
         ViewHolder(View v) {
             super(v);
@@ -72,6 +88,12 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
             price = v.findViewById(R.id.stock_price);
             delta = v.findViewById(R.id.stock_delta);
             line = v.findViewById(R.id.line);
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    stockContatiner.stockClicked(stock);
+                }
+            });
         }
     }
 

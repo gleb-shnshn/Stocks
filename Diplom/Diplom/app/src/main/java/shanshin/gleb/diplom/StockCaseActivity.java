@@ -9,13 +9,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.support.v7.widget.Toolbar;
 
 import com.ethanhua.skeleton.RecyclerViewSkeletonScreen;
 import com.ethanhua.skeleton.Skeleton;
 import com.ethanhua.skeleton.ViewSkeletonScreen;
+
 
 import java.lang.annotation.Annotation;
 
@@ -25,11 +28,12 @@ import retrofit2.Callback;
 import retrofit2.Converter;
 import retrofit2.Response;
 import shanshin.gleb.diplom.api.AccountApi;
+import shanshin.gleb.diplom.model.Stock;
 import shanshin.gleb.diplom.responses.DefaultErrorResponse;
 import shanshin.gleb.diplom.responses.InfoResponse;
 
 
-public class StockCaseActivity extends AppCompatActivity {
+public class StockCaseActivity extends AppCompatActivity implements StockContatiner {
     RecyclerView stocksView;
     RecyclerViewSkeletonScreen skeletonStocks;
     ViewSkeletonScreen skeletonHeader;
@@ -46,7 +50,6 @@ public class StockCaseActivity extends AppCompatActivity {
         setContentView(R.layout.activity_stock_case);
         initializeViews();
 
-        bottomSheetDialog.show();
         setSkeletonLoading();
         getInfoAboutAccount();
     }
@@ -103,7 +106,7 @@ public class StockCaseActivity extends AppCompatActivity {
         nameView.setText(infoResponse.name);
         balanceView.setText(infoResponse.balance + "\u20BD");
         stocksView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        stocksView.setAdapter(new StockAdapter(getApplicationContext(), infoResponse.stocks));
+        stocksView.setAdapter(new StockAdapter(this, infoResponse.stocks));
 
     }
 
@@ -129,5 +132,11 @@ public class StockCaseActivity extends AppCompatActivity {
 
     public void switchToSearchStocks(View view) {
         startActivity(new Intent(this, StockSearchActivity.class));
+    }
+
+    @Override
+    public void stockClicked(Stock stock) {
+        App.getInstance().initializeDialog(bottomSheetDialog, stock.name, "Продать");
+        bottomSheetDialog.show();
     }
 }

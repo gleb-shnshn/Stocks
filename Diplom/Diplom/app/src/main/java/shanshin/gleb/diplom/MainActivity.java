@@ -1,16 +1,14 @@
 package shanshin.gleb.diplom;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 
 import shanshin.gleb.diplom.api.AuthApi;
 import shanshin.gleb.diplom.model.LoginAndPassword;
 import shanshin.gleb.diplom.responses.AuthErrorResponse;
 import shanshin.gleb.diplom.responses.AuthErrorResponse.InvalidField;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -65,8 +63,13 @@ public class MainActivity extends AppCompatActivity {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                updateContentViewOnUiThread(R.layout.activity_login);
+                if (App.getInstance().getAccessToken().equals("")) {
+                    updateContentViewOnUiThread(R.layout.activity_login);
+                }else {
+                    switchToStockCase();
+                }
             }
+
         }).start();
     }
 
@@ -85,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         AuthSuccessResponse successResponse = response.body();
                         log(successResponse.accessToken);
-                        saveTokens(successResponse.accessToken, successResponse.refreshToken);
+                        App.getInstance().saveTokens(successResponse.accessToken, successResponse.refreshToken);
                         switchToStockCase();
                     }
 
@@ -104,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
     private void switchToStockCase() {
         Intent intent = new Intent(MainActivity.this, StockCaseActivity.class);
         startActivity(intent);
+        finish();
     }
 
     private Call<AuthSuccessResponse> getRequestCallByStringName(String request) {
@@ -117,13 +121,6 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
-    public void saveTokens(String accessToken, String refreshToken) {
-        SharedPreferences sPref = getSharedPreferences("tokens", MODE_PRIVATE);
-        Editor ed = sPref.edit();
-        ed.putString("accessToken", accessToken);
-        ed.putString("refreshToken", refreshToken);
-        ed.commit();
-    }
 
     public void clickToLogin(View view) {
         performRequest("login");
