@@ -2,18 +2,16 @@ package shanshin.gleb.diplom;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomSheetDialog;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import androidx.annotation.NonNull;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 
 import com.ethanhua.skeleton.RecyclerViewSkeletonScreen;
 import com.ethanhua.skeleton.Skeleton;
@@ -118,7 +116,7 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
 
     public void setSkeletonLoading() {
         toolbar.setVisibility(View.GONE);
-        stocksView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        stocksView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         skeletonHeader = Skeleton.bind(cardView)
                 .load(R.layout.header_skeleton)
                 .duration(1200)

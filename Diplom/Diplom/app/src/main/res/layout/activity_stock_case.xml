@@ -1,4 +1,4 @@
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cco"
     android:layout_width="match_parent"
@@ -6,20 +6,20 @@
     tools:context=".StockCaseActivity"
     android:layout_height="match_parent">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/main.appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:elevation="10dp">
 
-        <android.support.design.widget.CollapsingToolbarLayout
+        <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/main.collapsing"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -52,20 +52,20 @@
                 </RelativeLayout>
 
 
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
-        </android.support.design.widget.CollapsingToolbarLayout>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
 
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/stocksView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="none"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/main.toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -78,7 +78,7 @@
         app:theme="@style/ThemeOverlay.AppCompat.Dark"
         app:title="">
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:cardBackgroundColor="#00000000"
@@ -116,8 +116,8 @@
             </RelativeLayout>
 
 
-        </android.support.v7.widget.CardView>
-    </android.support.v7.widget.Toolbar>
+        </androidx.cardview.widget.CardView>
+    </androidx.appcompat.widget.Toolbar>
 
     <TextView
         android:id="@+id/balance"
@@ -136,7 +136,7 @@
         app:finalYPosition="@dimen/spacing_small"
         app:layout_behavior=".BalanceBehavior" />
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addFloatingButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -148,4 +148,4 @@
         app:backgroundTint="@color/grey"
         app:srcCompat="@drawable/ic_add_white_48dp" />
 
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

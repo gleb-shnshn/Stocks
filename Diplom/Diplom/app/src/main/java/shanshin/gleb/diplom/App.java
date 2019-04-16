@@ -3,13 +3,13 @@ package shanshin.gleb.diplom;
 import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.design.widget.BottomSheetDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.muddzdev.styleabletoastlibrary.StyleableToast;
+import com.muddzdev.styleabletoast.StyleableToast;
 
 import java.io.IOException;
 

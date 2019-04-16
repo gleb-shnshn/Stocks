@@ -5,8 +5,8 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    android:paddingEnd="10dp"
-    android:paddingStart="10dp">
+    android:paddingStart="10dp"
+    android:paddingEnd="10dp">
 
     <ImageView
         android:layout_width="match_parent"
@@ -50,21 +50,26 @@
         android:hint="********"
         android:inputType="textPassword" />
 
-    <Button
+    <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
+        android:id="@+id/progressButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:background="@color/grey"
-        android:onClick="clickToLogin"
-        android:text="Войти"
+        android:onClick="clickToPerform"
+        android:text=""
         android:textAllCaps="false"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        app:spinning_bar_color="@color/white"
+        app:spinning_bar_padding="@dimen/progressPadding"
+        app:spinning_bar_width="@dimen/progressWidth" />
 
     <TextView
+        android:id="@+id/switchButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="switchView"
         android:padding="15dp"
-        android:onClick="switchToRegistration"
-        android:text="Создать аккаунт"
+        android:text=""
         android:textAlignment="center" />
 </LinearLayout>

@@ -2,16 +2,20 @@ package shanshin.gleb.diplom;
 
 import android.content.Intent;
 
+import br.com.simplepass.loadingbutton.customViews.CircularProgressButton;
 import shanshin.gleb.diplom.api.AuthApi;
 import shanshin.gleb.diplom.model.LoginAndPassword;
 import shanshin.gleb.diplom.responses.AuthErrorResponse;
 import shanshin.gleb.diplom.responses.AuthErrorResponse.InvalidField;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.lang.annotation.Annotation;
@@ -24,14 +28,18 @@ import retrofit2.Response;
 import shanshin.gleb.diplom.responses.AuthSuccessResponse;
 
 public class MainActivity extends AppCompatActivity {
+    CircularProgressButton circularProgressButton;
     EditText loginField, passwordField;
+    TextView switchButton;
+    boolean isLoginOrRegistration = true;
 
-    public void updateContentViewOnUiThread(final int layout) {
+    public void updateContentViewOnUiThread(final int layout, final boolean needInit) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 setContentView(layout);
-                initializeViews();
+                if (needInit)
+                    initializeViews();
             }
         });
     }
@@ -39,16 +47,19 @@ public class MainActivity extends AppCompatActivity {
     public void initializeViews() {
         loginField = findViewById(R.id.loginInput);
         passwordField = findViewById(R.id.passInput);
+        circularProgressButton = findViewById(R.id.progressButton);
+        switchButton = findViewById(R.id.switchButton);
+        updateTextOnButtons();
     }
 
-    public void switchToRegistration(View view) {
-        setContentView(R.layout.activity_registration);
-        initializeViews();
+    public void switchView(View view) {
+        isLoginOrRegistration = !isLoginOrRegistration;
+        updateTextOnButtons();
     }
 
-    public void switchToLogin(View view) {
-        setContentView(R.layout.activity_login);
-        initializeViews();
+    private void updateTextOnButtons() {
+        switchButton.setText(isLoginOrRegistration ? "Создать аккаунт" : "Уже зарегистрированы?");
+        circularProgressButton.setText(isLoginOrRegistration ? "Войти" : "Создать аккаунт");
     }
 
     @Override
@@ -57,15 +68,15 @@ public class MainActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                updateContentViewOnUiThread(R.layout.activity_loading);
+                updateContentViewOnUiThread(R.layout.activity_loading, false);
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 if (App.getInstance().getAccessToken().equals("")) {
-                    updateContentViewOnUiThread(R.layout.activity_login);
-                }else {
+                    updateContentViewOnUiThread(R.layout.activity_auth, true);
+                } else {
                     switchToStockCase();
                 }
             }
@@ -73,15 +84,18 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
-    public void performRequest(String request) {
-        getRequestCallByStringName(request).enqueue(new Callback<AuthSuccessResponse>() {
+    public void performRequest() {
+        showProgress(true);
+        getRequestCall().enqueue(new Callback<AuthSuccessResponse>() {
             @Override
             public void onResponse(Call<AuthSuccessResponse> call, Response<AuthSuccessResponse> response) {
                 try {
+                    showProgress(false);
                     if (response != null && !response.isSuccessful() && response.errorBody() != null) {
                         Converter<ResponseBody, AuthErrorResponse> errorConverter =
                                 App.getInstance().getRetrofit().responseBodyConverter(AuthErrorResponse.class, new Annotation[0]);
                         AuthErrorResponse errorResponse = errorConverter.convert(response.errorBody());
+
                         for (InvalidField invalidField : errorResponse.invalidFields) {
                             App.getInstance().showError(invalidField.message);
                         }
@@ -104,30 +118,34 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void showProgress(boolean visible) {
+        if (visible) {
+            circularProgressButton.startMorphAnimation(); //превращение в loader
+        } else {
+            circularProgressButton.startMorphRevertAnimation(); //превращение в кнопку
+        }
+
+    }
+
     private void switchToStockCase() {
         Intent intent = new Intent(MainActivity.this, StockCaseActivity.class);
         startActivity(intent);
         finish();
     }
 
-    private Call<AuthSuccessResponse> getRequestCallByStringName(String request) {
+    private Call<AuthSuccessResponse> getRequestCall() {
         AuthApi authApi = App.getInstance().getRetrofit().create(AuthApi.class);
         LoginAndPassword data = getDataFromFields();
-        if (request.equals("login")) {
+        if (isLoginOrRegistration) {
             return authApi.loginUser(data);
-        } else if (request.equals("register")) {
+        } else {
             return authApi.registerUser(data);
         }
-        return null;
     }
 
 
-    public void clickToLogin(View view) {
-        performRequest("login");
-    }
-
-    public void clickToRegister(View view) {
-        performRequest("register");
+    public void clickToPerform(View view) {
+        performRequest();
     }
 
     public LoginAndPassword getDataFromFields() {
@@ -141,6 +159,5 @@ public class MainActivity extends AppCompatActivity {
         Log.d("tokens", msg);
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
-
 
 }
