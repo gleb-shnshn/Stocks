@@ -20,6 +20,7 @@ import com.ethanhua.skeleton.ViewSkeletonScreen;
 
 import java.lang.annotation.Annotation;
 
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,6 +34,7 @@ import shanshin.gleb.diplom.responses.InfoResponse;
 
 public class StockCaseActivity extends AppCompatActivity implements StockContatiner {
     RecyclerView stocksView;
+    SwipeRefreshLayout swipeRefreshLayout;
     RecyclerViewSkeletonScreen skeletonStocks;
     ViewSkeletonScreen skeletonHeader;
     TextView nameView, balanceView;
@@ -49,6 +51,7 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
         initializeViews();
 
         setSkeletonLoading();
+        swipeRefreshLayout.setRefreshing(true);
         getInfoAboutAccount();
     }
 
@@ -57,6 +60,13 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
         cardView = findViewById(R.id.card);
         nameView = findViewById(R.id.name);
         toolbar = findViewById(R.id.main_toolbar);
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getInfoAboutAccount();
+            }
+        });
         balanceView = findViewById(R.id.balance);
         fabView = findViewById(R.id.addFloatingButton);
         bottomSheetDialog = new BottomSheetDialog(this);
@@ -74,7 +84,7 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
 
     private void getInfoAboutAccount() {
         AccountApi accountApi = App.getInstance().getRetrofit().create(AccountApi.class);
-        accountApi.getAccountInfo(App.getInstance().getAccessToken()).enqueue(new Callback<InfoResponse>() {
+        accountApi.getAccountInfo(App.getInstance().getDataHandler().getAccessToken()).enqueue(new Callback<InfoResponse>() {
             @Override
             public void onResponse(Call<InfoResponse> call, Response<InfoResponse> response) {
                 try {
@@ -82,7 +92,7 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
                         Converter<ResponseBody, DefaultErrorResponse> errorConverter =
                                 App.getInstance().getRetrofit().responseBodyConverter(DefaultErrorResponse.class, new Annotation[0]);
                         DefaultErrorResponse errorResponse = errorConverter.convert(response.errorBody());
-                        App.getInstance().showError(errorResponse.message);
+                        App.getInstance().getUtils().showError(errorResponse.message);
                     } else {
                         InfoResponse infoResponse = response.body();
                         cancelSkeletonLoading();
@@ -103,19 +113,21 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
     private void fillActivityView(InfoResponse infoResponse) {
         nameView.setText(infoResponse.name);
         balanceView.setText(infoResponse.balance + "\u20BD");
-        stocksView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         stocksView.setAdapter(new StockAdapter(this, infoResponse.stocks));
 
     }
 
     private void cancelSkeletonLoading() {
+        swipeRefreshLayout.setRefreshing(false);
         toolbar.setVisibility(View.VISIBLE);
         skeletonHeader.hide();
         skeletonStocks.hide();
+        fabView.show();
     }
 
     public void setSkeletonLoading() {
         toolbar.setVisibility(View.GONE);
+        fabView.hide();
         stocksView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         skeletonHeader = Skeleton.bind(cardView)
                 .load(R.layout.header_skeleton)

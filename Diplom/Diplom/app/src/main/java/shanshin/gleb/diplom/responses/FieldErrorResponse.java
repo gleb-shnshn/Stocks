@@ -2,7 +2,7 @@ package shanshin.gleb.diplom.responses;
 
 import com.google.gson.annotations.SerializedName;
 
-public class AuthErrorResponse {
+public class FieldErrorResponse {
     @SerializedName("code")
     public String code;
 

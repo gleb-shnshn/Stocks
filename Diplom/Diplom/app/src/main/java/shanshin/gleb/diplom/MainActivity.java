@@ -5,8 +5,8 @@ import android.content.Intent;
 import br.com.simplepass.loadingbutton.customViews.CircularProgressButton;
 import shanshin.gleb.diplom.api.AuthApi;
 import shanshin.gleb.diplom.model.LoginAndPassword;
-import shanshin.gleb.diplom.responses.AuthErrorResponse;
-import shanshin.gleb.diplom.responses.AuthErrorResponse.InvalidField;
+import shanshin.gleb.diplom.responses.FieldErrorResponse;
+import shanshin.gleb.diplom.responses.FieldErrorResponse.InvalidField;
 
 import android.os.Bundle;
 
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                if (App.getInstance().getAccessToken().equals("")) {
+                if (App.getInstance().getDataHandler().getAccessToken().equals("")) {
                     updateContentViewOnUiThread(R.layout.activity_auth, true);
                 } else {
                     switchToStockCase();
@@ -91,18 +91,19 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<AuthSuccessResponse> call, Response<AuthSuccessResponse> response) {
                 try {
                     showProgress(false);
-                    if (response != null && !response.isSuccessful() && response.errorBody() != null) {
-                        Converter<ResponseBody, AuthErrorResponse> errorConverter =
-                                App.getInstance().getRetrofit().responseBodyConverter(AuthErrorResponse.class, new Annotation[0]);
-                        AuthErrorResponse errorResponse = errorConverter.convert(response.errorBody());
+                    if (response.code()==401){
+                        App.getInstance().getUtils().showError("Неверный логин или пароль");
+                    }else if (!response.isSuccessful() && response.errorBody() != null) {
+                        Converter<ResponseBody, FieldErrorResponse> errorConverter =
+                                App.getInstance().getRetrofit().responseBodyConverter(FieldErrorResponse.class, new Annotation[0]);
+                        FieldErrorResponse errorResponse = errorConverter.convert(response.errorBody());
 
                         for (InvalidField invalidField : errorResponse.invalidFields) {
-                            App.getInstance().showError(invalidField.message);
+                            App.getInstance().getUtils().showError(invalidField.message);
                         }
                     } else {
                         AuthSuccessResponse successResponse = response.body();
-                        log(successResponse.accessToken);
-                        App.getInstance().saveTokens(successResponse.accessToken, successResponse.refreshToken);
+                        App.getInstance().getDataHandler().saveTokens(successResponse.accessToken, successResponse.refreshToken);
                         switchToStockCase();
                     }
 
@@ -152,12 +153,6 @@ public class MainActivity extends AppCompatActivity {
         String login = loginField.getText().toString();
         String password = passwordField.getText().toString();
         return new LoginAndPassword(login, password);
-    }
-
-
-    private void log(String msg) {
-        Log.d("tokens", msg);
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
 }

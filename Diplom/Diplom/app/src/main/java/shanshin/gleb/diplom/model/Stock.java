@@ -24,5 +24,4 @@ public class Stock {
 
     @SerializedName("count")
     public int count;
-
 }

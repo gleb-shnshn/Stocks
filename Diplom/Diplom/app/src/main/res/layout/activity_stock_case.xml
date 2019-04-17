@@ -1,10 +1,10 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cco"
     android:layout_width="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".StockCaseActivity"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".StockCaseActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/main.appbar"
@@ -58,20 +58,26 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/stocksView"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="none"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/stocksView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none"/>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/main.toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="#00000000"
-        android:contentInsetLeft="0dp"
         android:contentInsetStart="0dp"
+        android:contentInsetLeft="0dp"
         app:contentInsetLeft="0dp"
         app:contentInsetStart="0dp"
         app:layout_anchor="@id/main.collapsing"
@@ -141,8 +147,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
-        android:layout_marginBottom="10dp"
         android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
         android:clickable="true"
         android:onClick="switchToSearchStocks"
         app:backgroundTint="@color/grey"

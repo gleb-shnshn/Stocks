@@ -29,8 +29,6 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
         this.stockContatiner = (StockContatiner) ctx;
         this.inflater = LayoutInflater.from(ctx);
         this.stocks = stocks;
-        this.stocks.addAll(stocks);
-        this.stocks.addAll(stocks);
 
         this.upColor = inflater.getContext().getResources().getColor(R.color.colorPrimary);
         this.downColor = inflater.getContext().getResources().getColor(R.color.errorColor);

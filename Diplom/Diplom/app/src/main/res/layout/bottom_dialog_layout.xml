@@ -23,18 +23,18 @@
         android:orientation="horizontal">
 
         <EditText
-            android:id="@+id/loginInput2"
+            android:id="@+id/countInput"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:layout_weight="1"
             android:ems="10"
             android:gravity="center_vertical"
-            android:hint="Введите количество"
-            android:inputType="text" />
+            android:hint="Количество"
+            android:inputType="number" />
 
-        <Button
-            android:id="@+id/button"
+        <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
+            android:id="@+id/dialogButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
@@ -42,6 +42,9 @@
             android:background="@color/grey"
             android:text="Купить"
             android:textAllCaps="false"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            app:spinning_bar_color="@color/white"
+            app:spinning_bar_padding="@dimen/progressPadding"
+            app:spinning_bar_width="@dimen/progressWidth" />
     </LinearLayout>
 </LinearLayout>
