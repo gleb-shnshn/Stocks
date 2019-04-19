@@ -3,11 +3,6 @@ package shanshin.gleb.diplom;
 import android.app.Application;
 import android.content.Intent;
 
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-
-import android.widget.Button;
-import android.widget.TextView;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -29,6 +24,12 @@ public class App extends Application {
     private SharedPreferencesHandler sharedPrefsHandler;
     private GeneralUtils utils;
 
+    public BottomDialogHandler getDialogHandler() {
+        return dialogHandler;
+    }
+
+    private BottomDialogHandler dialogHandler;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -37,6 +38,7 @@ public class App extends Application {
         gson = new GsonBuilder().create();
         sharedPrefsHandler = new SharedPreferencesHandler();
         utils = new GeneralUtils();
+        dialogHandler = new BottomDialogHandler();
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(new ExpiredTokenInterceptor())
                 .build();
@@ -60,14 +62,6 @@ public class App extends Application {
     public Retrofit getRetrofit() {
         return retrofit;
     }
-
-    public void initializeDialog(BottomSheetDialog bottomSheetDialog, String name, String buttonText) {
-        TextView stockName = bottomSheetDialog.findViewById(R.id.stock_name);
-        Button button = bottomSheetDialog.findViewById(R.id.dialogButton);
-        stockName.setText(name);
-        button.setText(buttonText);
-    }
-
 
     public void updateTokens() {
         AuthApi authApi = getInstance().getRetrofit().create(AuthApi.class);

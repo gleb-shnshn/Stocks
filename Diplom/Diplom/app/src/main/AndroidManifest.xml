@@ -25,6 +25,9 @@
         <activity
             android:name=".StockSearchActivity"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".TransactionHistoryActivity"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

@@ -3,10 +3,13 @@ package shanshin.gleb.diplom;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
@@ -51,7 +54,6 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
         initializeViews();
 
         setSkeletonLoading();
-        swipeRefreshLayout.setRefreshing(true);
         getInfoAboutAccount();
     }
 
@@ -83,6 +85,7 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
     }
 
     private void getInfoAboutAccount() {
+        swipeRefreshLayout.setRefreshing(true);
         AccountApi accountApi = App.getInstance().getRetrofit().create(AccountApi.class);
         accountApi.getAccountInfo(App.getInstance().getDataHandler().getAccessToken()).enqueue(new Callback<InfoResponse>() {
             @Override
@@ -146,7 +149,20 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
 
     @Override
     public void stockClicked(Stock stock) {
-        App.getInstance().initializeDialog(bottomSheetDialog, stock.name, "Продать");
-        bottomSheetDialog.show();
+        App.getInstance().getDialogHandler().initializeDialog(bottomSheetDialog, stock, false, this);
+    }
+
+    @Override
+    public void requestSuccess() {
+        getInfoAboutAccount();
+    }
+
+    @Override
+    public void requestError() {
+
+    }
+
+    public void switchToTransactionHistory(View view) {
+        startActivity(new Intent(this, TransactionHistoryActivity.class));
     }
 }

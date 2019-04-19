@@ -2,12 +2,18 @@ package shanshin.gleb.diplom;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,12 +55,19 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull StockAdapter.ViewHolder viewHolder, int i) {
         Stock stock = stocks.get(i);
         if (stock.name.length() > 10) {
-            stock.name = stock.name.substring(0, 9) + "..";
+            viewHolder.name.setText(stock.name.substring(0, 9) + "..");
+        } else {
+            viewHolder.name.setText(stock.name);
         }
         viewHolder.stock = stock;
-        viewHolder.name.setText(stock.name);
         viewHolder.count.setText(stock.count + " шт.");
         viewHolder.price.setText(stock.price + " руб.");
+        Glide
+                .with(inflater.getContext())
+                .load(App.getInstance().getString(R.string.server_url) + stock.iconUrl.substring(1))
+                .centerCrop()
+                .placeholder(R.drawable.white_circle)
+                .into(viewHolder.icon);
         viewHolder.delta.setTextColor(stock.priceDelta < 0 ? downColor : upColor);
         viewHolder.line.setBackground(stock.priceDelta < 0 ? downDrawable : upDrawable);
         viewHolder.delta.setText((stock.priceDelta < 0 ? "↓" : "↑") + stock.priceDelta + " руб(" + String.format("%.5f", stock.priceDelta / stock.price) + "%)");
@@ -77,6 +90,7 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
     class ViewHolder extends RecyclerView.ViewHolder {
         final TextView name, count, price, delta;
         final View line;
+        final ImageView icon;
         Stock stock;
 
         ViewHolder(View v) {
@@ -86,6 +100,7 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
             price = v.findViewById(R.id.stock_price);
             delta = v.findViewById(R.id.stock_delta);
             line = v.findViewById(R.id.line);
+            icon = v.findViewById(R.id.icon);
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

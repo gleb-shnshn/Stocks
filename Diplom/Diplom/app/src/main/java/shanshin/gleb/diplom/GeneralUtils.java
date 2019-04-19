@@ -4,7 +4,7 @@ import com.muddzdev.styleabletoast.StyleableToast;
 
 public class GeneralUtils {
 
-    public void showError(final String errorMessage) {
+    public void showError(String errorMessage) {
         new StyleableToast
                 .Builder(App.getInstance())
                 .text(errorMessage)
@@ -14,7 +14,12 @@ public class GeneralUtils {
                 .backgroundColor(App.getInstance().getResources().getColor(R.color.errorColor))
                 .show();
     }
-    public  boolean checkingCount(String countText, int availableCount) {
+
+    public boolean checkingCount(String countText, int availableCount) {
+        if (countText.equals("")) {
+            showError("Введите количество акций");
+            return false;
+        }
         int requestedCount = Integer.parseInt(countText);
         if (requestedCount > availableCount) {
             showError("Максимально доступное количество " + availableCount + " шт.");
@@ -24,5 +29,16 @@ public class GeneralUtils {
             return false;
         }
         return true;
+    }
+
+    public void showSuccess(String successMessage) {
+        new StyleableToast
+                .Builder(App.getInstance())
+                .text(successMessage)
+                .cornerRadius(5)
+                .textSize(13)
+                .textColor(App.getInstance().getResources().getColor(R.color.white))
+                .backgroundColor(App.getInstance().getResources().getColor(R.color.successColor))
+                .show();
     }
 }

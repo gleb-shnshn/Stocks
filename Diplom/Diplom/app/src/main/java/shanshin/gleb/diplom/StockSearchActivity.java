@@ -11,29 +11,21 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.View;
-import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.TextView;
 
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 
-import br.com.simplepass.loadingbutton.customViews.CircularProgressButton;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Converter;
 import retrofit2.Response;
 import shanshin.gleb.diplom.api.StocksApi;
-import shanshin.gleb.diplom.api.TransactionApi;
 import shanshin.gleb.diplom.model.Stock;
-import shanshin.gleb.diplom.model.StockAmountAndId;
-import shanshin.gleb.diplom.responses.BuyAndSellResponse;
 import shanshin.gleb.diplom.responses.DefaultErrorResponse;
-import shanshin.gleb.diplom.responses.FieldErrorResponse;
-import shanshin.gleb.diplom.responses.FieldErrorResponse.InvalidField;
 import shanshin.gleb.diplom.responses.StocksResponse;
 
 public class StockSearchActivity extends AppCompatActivity implements StockContatiner {
@@ -86,6 +78,7 @@ public class StockSearchActivity extends AppCompatActivity implements StockConta
             }
         });
         stocksApi = App.getInstance().getRetrofit().create(StocksApi.class);
+        updateStockList("");
     }
 
     private void updateStockList(String query) {
@@ -130,73 +123,18 @@ public class StockSearchActivity extends AppCompatActivity implements StockConta
 
     @Override
     public void stockClicked(final Stock stock) {
-        App.getInstance().initializeDialog(bottomSheetDialog, stock.name, "Купить");
-        bottomSheetDialog.show();
-        final EditText countField = bottomSheetDialog.findViewById(R.id.countInput);
-        countField.setHint(countField.getHint() + "(макс. - " + stock.count + " шт.)");
-        final CircularProgressButton dialogButton = bottomSheetDialog.findViewById(R.id.dialogButton);
-        dialogButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!App.getInstance().getUtils().checkingCount(countField.getText().toString(), stock.count))
-                    return;
-                dialogButton.startMorphAnimation();
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            buyStock(Integer.parseInt(countField.getText().toString()), stock.id);
-                            dialogButton.startMorphRevertAnimation();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                });
-            }
-        });
+        App.getInstance().getDialogHandler().initializeDialog(bottomSheetDialog, stock, true, this);
     }
 
+    @Override
+    public void requestSuccess() {
+        updateStockList(lastQuery);
 
-    private void buyStock(int count, int id) throws IOException {
-        TransactionApi transactionApi = App.getInstance().getRetrofit().create(TransactionApi.class);
-        StockAmountAndId data = new StockAmountAndId(count, id);
-        Response<BuyAndSellResponse> response = transactionApi.buyStocks(App.getInstance().getDataHandler().getAccessToken(), data).execute();
-        if (!response.isSuccessful() && response.errorBody() != null) {
-            Converter<ResponseBody, FieldErrorResponse> errorConverter =
-                    App.getInstance().getRetrofit().responseBodyConverter(FieldErrorResponse.class, new Annotation[0]);
-            FieldErrorResponse errorResponse = errorConverter.convert(response.errorBody());
-
-            for (InvalidField invalidField : errorResponse.invalidFields) {
-                App.getInstance().getUtils().showError(invalidField.message);
-            }
-        } else {
-            updateStockList(lastQuery);
-        }
-        /*        enqueue(new Callback<BuyAndSellResponse>() {
-            @Override
-            public void onResponse(Call<BuyAndSellResponse> call, Response<BuyAndSellResponse> response) {
-                try {
-                    if (!response.isSuccessful() && response.errorBody() != null) {
-                        Converter<ResponseBody, FieldErrorResponse> errorConverter =
-                                App.getInstance().getRetrofit().responseBodyConverter(FieldErrorResponse.class, new Annotation[0]);
-                        FieldErrorResponse errorResponse = errorConverter.convert(response.errorBody());
-
-                        for (InvalidField invalidField : errorResponse.invalidFields) {
-                            App.getInstance().getUtils().showError(invalidField.message);
-                        }
-                    } else {
-
-                    }
-
-                } catch (Exception ignored) {
-                }
-            }
-
-            @Override
-            public void onFailure(Call<BuyAndSellResponse> call, Throwable t) {
-
-            }
-        });*/
     }
+
+    @Override
+    public void requestError() {
+
+    }
+
 }

@@ -2,7 +2,6 @@ package shanshin.gleb.diplom;
 
 import android.content.Intent;
 
-import br.com.simplepass.loadingbutton.customViews.CircularProgressButton;
 import shanshin.gleb.diplom.api.AuthApi;
 import shanshin.gleb.diplom.model.LoginAndPassword;
 import shanshin.gleb.diplom.responses.FieldErrorResponse;
@@ -12,11 +11,9 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.lang.annotation.Annotation;
 
@@ -28,7 +25,7 @@ import retrofit2.Response;
 import shanshin.gleb.diplom.responses.AuthSuccessResponse;
 
 public class MainActivity extends AppCompatActivity {
-    CircularProgressButton circularProgressButton;
+    LoadingButton loadingButton;
     EditText loginField, passwordField;
     TextView switchButton;
     boolean isLoginOrRegistration = true;
@@ -47,8 +44,14 @@ public class MainActivity extends AppCompatActivity {
     public void initializeViews() {
         loginField = findViewById(R.id.loginInput);
         passwordField = findViewById(R.id.passInput);
-        circularProgressButton = findViewById(R.id.progressButton);
+        loadingButton = findViewById(R.id.progressButton);
         switchButton = findViewById(R.id.switchButton);
+        loadingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                performRequest();
+            }
+        });
         updateTextOnButtons();
     }
 
@@ -59,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateTextOnButtons() {
         switchButton.setText(isLoginOrRegistration ? "Создать аккаунт" : "Уже зарегистрированы?");
-        circularProgressButton.setText(isLoginOrRegistration ? "Войти" : "Создать аккаунт");
+        loadingButton.setText(isLoginOrRegistration ? "Войти" : "Создать аккаунт");
     }
 
     @Override
@@ -91,9 +94,9 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<AuthSuccessResponse> call, Response<AuthSuccessResponse> response) {
                 try {
                     showProgress(false);
-                    if (response.code()==401){
+                    if (response.code() == 401) {
                         App.getInstance().getUtils().showError("Неверный логин или пароль");
-                    }else if (!response.isSuccessful() && response.errorBody() != null) {
+                    } else if (!response.isSuccessful() && response.errorBody() != null) {
                         Converter<ResponseBody, FieldErrorResponse> errorConverter =
                                 App.getInstance().getRetrofit().responseBodyConverter(FieldErrorResponse.class, new Annotation[0]);
                         FieldErrorResponse errorResponse = errorConverter.convert(response.errorBody());
@@ -121,9 +124,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void showProgress(boolean visible) {
         if (visible) {
-            circularProgressButton.startMorphAnimation(); //превращение в loader
+            loadingButton.startLoading(); //превращение в loader
         } else {
-            circularProgressButton.startMorphRevertAnimation(); //превращение в кнопку
+            loadingButton.stopLoading(); //превращение в кнопку
         }
 
     }
@@ -142,11 +145,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             return authApi.registerUser(data);
         }
-    }
-
-
-    public void clickToPerform(View view) {
-        performRequest();
     }
 
     public LoginAndPassword getDataFromFields() {

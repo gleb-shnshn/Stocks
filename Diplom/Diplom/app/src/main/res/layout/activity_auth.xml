@@ -50,19 +50,14 @@
         android:hint="********"
         android:inputType="textPassword" />
 
-    <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
+    <shanshin.gleb.diplom.LoadingButton
         android:id="@+id/progressButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:background="@color/grey"
-        android:onClick="clickToPerform"
         android:text=""
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        app:spinning_bar_color="@color/white"
-        app:spinning_bar_padding="@dimen/progressPadding"
-        app:spinning_bar_width="@dimen/progressWidth" />
+        android:textColor="@color/white"/>
 
     <TextView
         android:id="@+id/switchButton"

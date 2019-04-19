@@ -10,8 +10,15 @@
         <item name="android:textColorPrimary">@color/white</item>
         <item name="android:textColorSecondary">@color/white</item>
     </style>
-    <style name="AppSearchView" parent="Widget.AppCompat.SearchView" >
+
+    <style name="AppSearchView" parent="Widget.AppCompat.SearchView">
         <item name="android:textColorHint">@color/light_grey</item>
         <item name="android:tint">@color/white</item>
     </style>
+
+
+    <declare-styleable name="LoadingButton">
+        <attr name="text" format="string" />
+    </declare-styleable>
+
 </resources>
