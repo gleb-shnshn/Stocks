@@ -15,8 +15,14 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import shanshin.gleb.diplom.model.Stock;
 import shanshin.gleb.diplom.model.TransactionStock;
@@ -29,6 +35,8 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
     private int downColor, upColor, greyColor;
     private Drawable upDrawable, downDrawable;
     private Integer activityCode = null;
+    private DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.ENGLISH);
+    private DateFormat dfNew = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
 
     StockAdapter() {
         stocks = new ArrayList<>();
@@ -50,14 +58,9 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
 
     }
 
-    StockAdapter(Context ctx, List<Stock> stocks, Integer activityCode) {
+    StockAdapter(Context ctx, List<Stock> stocks, ArrayList<TransactionStock> transactionStocks, Integer activityCode) {
         this.stocks = stocks;
-        initData(ctx, activityCode);
-        notifyDataSetChanged();
-    }
-
-    StockAdapter(Context ctx, ArrayList<TransactionStock> stocks, Integer activityCode) {
-        this.transactionStocks = stocks;
+        this.transactionStocks = transactionStocks;
         initData(ctx, activityCode);
         notifyDataSetChanged();
     }
@@ -81,14 +84,30 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
     private void bindTransactionViewHolder(ViewHolder viewHolder, int i) {
         TransactionStock transactionStock = transactionStocks.get(i);
         bindGeneralViews(viewHolder, transactionStock.stock);
-        viewHolder.count.setText(transactionStock.stock.code + " • "+transactionStock.amount+" шт.");
-        viewHolder.price.setText(transactionStock.totalPrice+" руб.");
-        viewHolder.delta.setText(transactionStock.date);
+        viewHolder.line.setVisibility(View.GONE);
+        viewHolder.plusOrMinus.setText(transactionStock.type.equals("sell") ? "−" : "+");
+        viewHolder.plusOrMinus.setTextColor(transactionStock.type.equals("sell") ? downColor : upColor);
+        viewHolder.count.setText(transactionStock.stock.code + " • " + transactionStock.amount + " шт.");
+        viewHolder.price.setText(String.format("%.2f", transactionStock.totalPrice) + " руб.");
+        viewHolder.delta.setText(formatDate(transactionStock.date));
         viewHolder.delta.setTextColor(greyColor);
     }
 
+    private String formatDate(String date) {
+        if (date.contains("T")) {
+            try {
+                return dfNew.format(df.parse(date));
+            } catch (ParseException e) {
+                Log.d("tagged", e.toString());
+            }
+            return "";
+        } else {
+            return date;
+        }
+
+    }
+
     private void bindGeneralViews(ViewHolder viewHolder, Stock stock) {
-        Log.d("tagged", "called");
         if (stock.name.length() > 10) {
             viewHolder.name.setText(stock.name.substring(0, 9) + "..");
         } else {
@@ -110,10 +129,11 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
             viewHolder.count.setText(stock.count + " шт.");
         else
             viewHolder.count.setText(stock.code);
-        viewHolder.price.setText(stock.price + " руб.");
+        viewHolder.price.setText(String.format("%.2f", stock.price) + " руб.");
         viewHolder.delta.setTextColor(stock.priceDelta < 0 ? downColor : upColor);
+        viewHolder.plusOrMinus.setVisibility(View.GONE);
         viewHolder.line.setBackground(stock.priceDelta < 0 ? downDrawable : upDrawable);
-        viewHolder.delta.setText((stock.priceDelta < 0 ? "↓" : "↑") + stock.priceDelta + " руб(" + String.format("%.5f", stock.priceDelta / stock.price) + "%)");
+        viewHolder.delta.setText((stock.priceDelta < 0 ? "↓" : "↑") + stock.priceDelta + " руб(" + String.format("%.4f", stock.priceDelta / stock.price) + "%)");
     }
 
 
@@ -124,11 +144,18 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        return stocks.size();
+        if (activityCode == null || activityCode == StockSearchActivity.SEARCH_STOCKS)
+            return stocks.size();
+        else
+            return transactionStocks.size();
     }
 
     public List<Stock> getStocks() {
         return stocks;
+    }
+
+    public List<TransactionStock> getHistoryStocks() {
+        return transactionStocks;
     }
 
     public void setHistoryStocks(ArrayList<TransactionStock> items) {
@@ -137,7 +164,7 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        final TextView name, count, price, delta;
+        final TextView name, count, price, delta, plusOrMinus;
         final View line;
         final ImageView icon;
         Stock stock;
@@ -148,6 +175,7 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
             count = v.findViewById(R.id.stock_count);
             price = v.findViewById(R.id.stock_price);
             delta = v.findViewById(R.id.stock_delta);
+            plusOrMinus = v.findViewById(R.id.plusOrMinus);
             line = v.findViewById(R.id.line);
             icon = v.findViewById(R.id.icon);
             v.setOnClickListener(new View.OnClickListener() {
@@ -160,8 +188,3 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
     }
 
 }
-
-
-
-
-

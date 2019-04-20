@@ -27,11 +27,10 @@ public class BottomDialogHandler {
         dialogButton.setText(App.getInstance().getString(isBuyOrSell ? R.string.buy : R.string.sell));
         bottomSheetDialog.show();
         final EditText countField = bottomSheetDialog.findViewById(R.id.countInput);
-        countField.setHint(countField.getHint() + "(макс. - " + stock.count + " шт.)");
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!App.getInstance().getUtils().checkingCount(countField.getText().toString(), stock.count))
+                if (!App.getInstance().getUtils().checkingCount(countField.getText().toString()))
                     return;
                 dialogButton.startLoading();
                 new Thread(new Runnable() {

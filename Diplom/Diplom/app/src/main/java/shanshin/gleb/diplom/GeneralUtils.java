@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import shanshin.gleb.diplom.model.Stock;
+import shanshin.gleb.diplom.model.TransactionStock;
 
 public class GeneralUtils {
 
@@ -20,16 +21,13 @@ public class GeneralUtils {
                 .show();
     }
 
-    public boolean checkingCount(String countText, int availableCount) {
+    public boolean checkingCount(String countText) {
         if (countText.equals("")) {
             showError("Введите количество акций");
             return false;
         }
         int requestedCount = Integer.parseInt(countText);
-        if (requestedCount > availableCount) {
-            showError("Максимально доступное количество " + availableCount + " шт.");
-            return false;
-        } else if (requestedCount < 1) {
+        if (requestedCount < 1) {
             showError("Количество акций должно быть больше нуля");
             return false;
         }
@@ -56,4 +54,12 @@ public class GeneralUtils {
         return newStocks;
     }
 
+    public ArrayList<TransactionStock> localTransactionQuery(String query, List<TransactionStock> stocks) {
+        ArrayList<TransactionStock> newStocks = new ArrayList<>();
+        for (TransactionStock transactionStock : stocks) {
+            if (transactionStock.stock.name.contains(query))
+                newStocks.add(transactionStock);
+        }
+        return newStocks;
+    }
 }

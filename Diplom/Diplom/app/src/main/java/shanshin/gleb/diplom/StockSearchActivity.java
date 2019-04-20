@@ -28,6 +28,7 @@ import retrofit2.Response;
 import shanshin.gleb.diplom.api.StocksApi;
 import shanshin.gleb.diplom.api.TransactionApi;
 import shanshin.gleb.diplom.model.Stock;
+import shanshin.gleb.diplom.model.TransactionStock;
 import shanshin.gleb.diplom.responses.DefaultErrorResponse;
 import shanshin.gleb.diplom.responses.StocksResponse;
 import shanshin.gleb.diplom.responses.TransactionHistoryResponse;
@@ -98,8 +99,8 @@ public class StockSearchActivity extends AppCompatActivity implements StockConta
 
 
         stocksView = findViewById(R.id.stocksView);
-        stockAdapter = new StockAdapter(this, new ArrayList<Stock>(), activityCode);
-        stocksView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        stockAdapter = new StockAdapter(this, new ArrayList<Stock>(), new ArrayList<TransactionStock>(), activityCode);
+        stocksView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         stocksView.setAdapter(stockAdapter);
 
         bottomSheetDialog = new BottomSheetDialog(this);
@@ -111,33 +112,41 @@ public class StockSearchActivity extends AppCompatActivity implements StockConta
     private void updateStockList(String query) {
         int itemCount = stockAdapter.getItemCount();
         int lastLength = lastQuery.length();
-        stockAdapter.setStocks(App.getInstance().getUtils().localQuery(query, stockAdapter.getStocks()));
+
+        if (activityCode == SEARCH_STOCKS) {
+            stockAdapter.setStocks(App.getInstance().getUtils().localQuery(query, stockAdapter.getStocks()));
+        } else {
+            stockAdapter.setHistoryStocks(App.getInstance().getUtils().localTransactionQuery(query, stockAdapter.getHistoryStocks()));
+        }
         lastQuery = query;
+
         if (lastLength < query.length() && itemCount < DEFAULT_COUNT) {
             return;
         }
         if (activityCode == TRANSACTION_HISTORY)
-            transactionApi.getTransactionHistory(App.getInstance().getDataHandler().getAccessToken(), query, DEFAULT_COUNT).enqueue(new Callback<TransactionHistoryResponse>() {
+            transactionApi.getTransactionHistory(App.getInstance().getDataHandler().getAccessToken(), query, DEFAULT_COUNT, 0).enqueue(new Callback<TransactionHistoryResponse>() {
                 @Override
                 public void onResponse(Call<TransactionHistoryResponse> call, Response<TransactionHistoryResponse> response) {
                     try {
                         handleHistoryResponse(response);
                     } catch (Exception ignored) {
+                        Log.d("tagged", ignored.toString());
                     }
                 }
 
                 @Override
                 public void onFailure(Call<TransactionHistoryResponse> call, Throwable t) {
-
+                    Log.d("tagged", t.toString());
                 }
             });
         else
-            stocksApi.getStocks(App.getInstance().getDataHandler().getAccessToken(), query, DEFAULT_COUNT).enqueue(new Callback<StocksResponse>() {
+            stocksApi.getStocksWithOffset(App.getInstance().getDataHandler().getAccessToken(), query, DEFAULT_COUNT,0).enqueue(new Callback<StocksResponse>() {
                 @Override
                 public void onResponse(Call<StocksResponse> call, Response<StocksResponse> response) {
                     try {
                         handleStocksResponse(response);
                     } catch (Exception ignored) {
+                        Log.d("tagged", response.raw().toString());
                     }
                 }
 
@@ -149,7 +158,7 @@ public class StockSearchActivity extends AppCompatActivity implements StockConta
     }
 
     private boolean handleResponseErrors(boolean isSuccessful, ResponseBody errorBody) throws IOException {
-        if (!isSuccessful && errorBody!= null) {
+        if (!isSuccessful && errorBody != null) {
             Converter<ResponseBody, DefaultErrorResponse> errorConverter =
                     App.getInstance().getRetrofit().responseBodyConverter(DefaultErrorResponse.class, new Annotation[0]);
             DefaultErrorResponse errorResponse = errorConverter.convert(errorBody);
@@ -161,14 +170,14 @@ public class StockSearchActivity extends AppCompatActivity implements StockConta
     }
 
     private void handleHistoryResponse(Response<TransactionHistoryResponse> response) throws IOException {
-        if (handleResponseErrors(response.isSuccessful(), response.errorBody())){
+        if (handleResponseErrors(response.isSuccessful(), response.errorBody())) {
             TransactionHistoryResponse transactionResponse = response.body();
             stockAdapter.setHistoryStocks(transactionResponse.items);
         }
     }
 
     private void handleStocksResponse(Response<StocksResponse> response) throws IOException {
-        if (handleResponseErrors(response.isSuccessful(), response.errorBody())){
+        if (handleResponseErrors(response.isSuccessful(), response.errorBody())) {
             StocksResponse stocksResponse = response.body();
             stockAdapter.setStocks(stocksResponse.items);
         }
