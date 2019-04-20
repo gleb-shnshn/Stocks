@@ -19,6 +19,6 @@ public interface TransactionApi {
     Call<BuyAndSellResponse> sellStocks(@Header("Authorization") String accessToken, @Body StockAmountAndId stockAmountAndId);
 
     @GET("/api/transaction/history")
-    Call<TransactionHistoryResponse> getTransactionHistory(@Header("Authorization") String accessToken, @Query("search") String search, @Query("count") int count);
+    Call<TransactionHistoryResponse> getTransactionHistory(@Header("Authorization") String accessToken, @Query("search") String search, @Query("count") int count, @Query("itemId") int itemId);
 
 }

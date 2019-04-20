@@ -10,6 +10,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -88,6 +89,8 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
                 else if (dy < 0) fabView.show();
             }
         });
+        stocksView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+
     }
 
     private void getInfoAboutAccount() {
@@ -121,7 +124,7 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
 
     private void fillActivityView(InfoResponse infoResponse) {
         nameView.setText(infoResponse.name);
-        balanceView.setText(infoResponse.balance + "\u20BD");
+        balanceView.setText(String.format("%.2f",infoResponse.balance) + "\u20BD ");
         stocksView.setAdapter(new StockAdapter(this, infoResponse.stocks, null,  null));
 
     }

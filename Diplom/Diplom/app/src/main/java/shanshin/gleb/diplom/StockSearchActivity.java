@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -102,6 +103,7 @@ public class StockSearchActivity extends AppCompatActivity implements StockConta
         stockAdapter = new StockAdapter(this, new ArrayList<Stock>(), new ArrayList<TransactionStock>(), activityCode);
         stocksView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         stocksView.setAdapter(stockAdapter);
+        stocksView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         bottomSheetDialog = new BottomSheetDialog(this);
         View sheetView = getLayoutInflater().inflate(R.layout.bottom_dialog_layout, null);
