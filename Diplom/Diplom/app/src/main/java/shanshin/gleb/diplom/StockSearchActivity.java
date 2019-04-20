@@ -10,11 +10,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.SearchView;
 import android.widget.TextView;
 
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 
@@ -24,34 +26,38 @@ import retrofit2.Callback;
 import retrofit2.Converter;
 import retrofit2.Response;
 import shanshin.gleb.diplom.api.StocksApi;
+import shanshin.gleb.diplom.api.TransactionApi;
 import shanshin.gleb.diplom.model.Stock;
 import shanshin.gleb.diplom.responses.DefaultErrorResponse;
 import shanshin.gleb.diplom.responses.StocksResponse;
+import shanshin.gleb.diplom.responses.TransactionHistoryResponse;
 
 public class StockSearchActivity extends AppCompatActivity implements StockContatiner {
     SearchView searchView;
     TextView titleText;
     StocksApi stocksApi;
+    TransactionApi transactionApi;
     RecyclerView stocksView;
     StockAdapter stockAdapter;
     String lastQuery = "";
     BottomSheetDialog bottomSheetDialog;
     final int DEFAULT_COUNT = 50;
+    static final int TRANSACTION_HISTORY = 1;
+    static final int SEARCH_STOCKS = 2;
+    int activityCode;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_stocks);
-        stocksView = findViewById(R.id.stocksView);
+        setContentView(R.layout.activity_search);
+        initializeViews();
+        updateStockList("");
+    }
+
+    private void initializeViews() {
         searchView = findViewById(R.id.searchView);
-        stockAdapter = new StockAdapter(this, new ArrayList<Stock>());
-        stocksView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        stocksView.setAdapter(stockAdapter);
         searchView.setMaxWidth(Integer.MAX_VALUE);
-        titleText = findViewById(R.id.title);
-        bottomSheetDialog = new BottomSheetDialog(this);
-        View sheetView = getLayoutInflater().inflate(R.layout.bottom_dialog_layout, null);
-        bottomSheetDialog.setContentView(sheetView);
         searchView.setOnSearchClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -77,48 +83,95 @@ public class StockSearchActivity extends AppCompatActivity implements StockConta
                 return false;
             }
         });
-        stocksApi = App.getInstance().getRetrofit().create(StocksApi.class);
-        updateStockList("");
+
+        titleText = findViewById(R.id.title);
+
+        activityCode = getIntent().getIntExtra("activityCode", 0);
+        if (activityCode == TRANSACTION_HISTORY) {
+            titleText.setText(getString(R.string.transaction_history_title));
+            transactionApi = App.getInstance().getRetrofit().create(TransactionApi.class);
+        } else if (activityCode == SEARCH_STOCKS) {
+            titleText.setText(getString(R.string.stock_search_title));
+            stocksApi = App.getInstance().getRetrofit().create(StocksApi.class);
+        } else
+            throw new RuntimeException(getString(R.string.wrong_code_exception));
+
+
+        stocksView = findViewById(R.id.stocksView);
+        stockAdapter = new StockAdapter(this, new ArrayList<Stock>(), activityCode);
+        stocksView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        stocksView.setAdapter(stockAdapter);
+
+        bottomSheetDialog = new BottomSheetDialog(this);
+        View sheetView = getLayoutInflater().inflate(R.layout.bottom_dialog_layout, null);
+        bottomSheetDialog.setContentView(sheetView);
+
     }
 
     private void updateStockList(String query) {
-        if (lastQuery.length() < query.length() && stockAdapter.getItemCount() < DEFAULT_COUNT) {
-            stockAdapter.setStocks(localQuery(query));
+        int itemCount = stockAdapter.getItemCount();
+        int lastLength = lastQuery.length();
+        stockAdapter.setStocks(App.getInstance().getUtils().localQuery(query, stockAdapter.getStocks()));
+        lastQuery = query;
+        if (lastLength < query.length() && itemCount < DEFAULT_COUNT) {
             return;
         }
-        stockAdapter.setStocks(localQuery(query));
-        stocksApi.getStocks(App.getInstance().getDataHandler().getAccessToken(), query, DEFAULT_COUNT).enqueue(new Callback<StocksResponse>() {
-            @Override
-            public void onResponse(Call<StocksResponse> call, Response<StocksResponse> response) {
-                try {
-                    if (response != null && !response.isSuccessful() && response.errorBody() != null) {
-                        Converter<ResponseBody, DefaultErrorResponse> errorConverter =
-                                App.getInstance().getRetrofit().responseBodyConverter(DefaultErrorResponse.class, new Annotation[0]);
-                        DefaultErrorResponse errorResponse = errorConverter.convert(response.errorBody());
-                        App.getInstance().getUtils().showError(errorResponse.message);
-                    } else {
-                        StocksResponse stocksResponse = response.body();
-                        stockAdapter.setStocks(stocksResponse.items);
+        if (activityCode == TRANSACTION_HISTORY)
+            transactionApi.getTransactionHistory(App.getInstance().getDataHandler().getAccessToken(), query, DEFAULT_COUNT).enqueue(new Callback<TransactionHistoryResponse>() {
+                @Override
+                public void onResponse(Call<TransactionHistoryResponse> call, Response<TransactionHistoryResponse> response) {
+                    try {
+                        handleHistoryResponse(response);
+                    } catch (Exception ignored) {
                     }
-                } catch (Exception ignored) {
                 }
-            }
 
-            @Override
-            public void onFailure(Call<StocksResponse> call, Throwable t) {
+                @Override
+                public void onFailure(Call<TransactionHistoryResponse> call, Throwable t) {
 
-            }
-        });
+                }
+            });
+        else
+            stocksApi.getStocks(App.getInstance().getDataHandler().getAccessToken(), query, DEFAULT_COUNT).enqueue(new Callback<StocksResponse>() {
+                @Override
+                public void onResponse(Call<StocksResponse> call, Response<StocksResponse> response) {
+                    try {
+                        handleStocksResponse(response);
+                    } catch (Exception ignored) {
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<StocksResponse> call, Throwable t) {
+
+                }
+            });
     }
 
-    private ArrayList<Stock> localQuery(String query) {
-        ArrayList<Stock> newStocks = new ArrayList<>();
-        for (Stock stock : stockAdapter.getStocks()) {
-            if (stock.name.contains(query))
-                newStocks.add(stock);
+    private boolean handleResponseErrors(boolean isSuccessful, ResponseBody errorBody) throws IOException {
+        if (!isSuccessful && errorBody!= null) {
+            Converter<ResponseBody, DefaultErrorResponse> errorConverter =
+                    App.getInstance().getRetrofit().responseBodyConverter(DefaultErrorResponse.class, new Annotation[0]);
+            DefaultErrorResponse errorResponse = errorConverter.convert(errorBody);
+            App.getInstance().getUtils().showError(errorResponse.message);
+            return false;
+        } else {
+            return true;
         }
-        lastQuery = query;
-        return newStocks;
+    }
+
+    private void handleHistoryResponse(Response<TransactionHistoryResponse> response) throws IOException {
+        if (handleResponseErrors(response.isSuccessful(), response.errorBody())){
+            TransactionHistoryResponse transactionResponse = response.body();
+            stockAdapter.setHistoryStocks(transactionResponse.items);
+        }
+    }
+
+    private void handleStocksResponse(Response<StocksResponse> response) throws IOException {
+        if (handleResponseErrors(response.isSuccessful(), response.errorBody())){
+            StocksResponse stocksResponse = response.body();
+            stockAdapter.setStocks(stocksResponse.items);
+        }
     }
 
     @Override

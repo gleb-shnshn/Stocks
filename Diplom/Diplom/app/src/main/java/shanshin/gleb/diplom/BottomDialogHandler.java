@@ -38,12 +38,11 @@ public class BottomDialogHandler {
                     @Override
                     public void run() {
                         try {
-                            performRequest(Integer.parseInt(countField.getText().toString()), stock.id, context, isBuyOrSell);
+                            performRequest(Integer.parseInt(countField.getText().toString()), stock.id, context, isBuyOrSell, bottomSheetDialog);
                             context.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     dialogButton.stopLoading();
-                                    bottomSheetDialog.hide();
                                 }
                             });
                         } catch (IOException ignored) {
@@ -55,7 +54,7 @@ public class BottomDialogHandler {
         });
     }
 
-    private void performRequest(int count, int id, final StockContatiner context, final boolean isBuyOrSell) throws IOException {
+    private void performRequest(int count, int id, final StockContatiner context, final boolean isBuyOrSell, final BottomSheetDialog bottomSheetDialog) throws IOException {
         TransactionApi transactionApi = App.getInstance().getRetrofit().create(TransactionApi.class);
         StockAmountAndId data = new StockAmountAndId(count, id);
         Response<BuyAndSellResponse> response;
@@ -65,28 +64,33 @@ public class BottomDialogHandler {
             response = transactionApi.sellStocks(App.getInstance().getDataHandler().getAccessToken(), data).execute();
 
         if (!response.isSuccessful() && response.errorBody() != null) {
-            Converter<ResponseBody, FieldErrorResponse> errorConverter =
-                    App.getInstance().getRetrofit().responseBodyConverter(FieldErrorResponse.class, new Annotation[0]);
-            final FieldErrorResponse errorResponse = errorConverter.convert(response.errorBody());
-            context.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    for (FieldErrorResponse.InvalidField invalidField : errorResponse.invalidFields) {
-                        App.getInstance().getUtils().showError(invalidField.message);
-                    }
-                    context.requestError();
-                }
-            });
+            handleError(context, response);
         } else {
             context.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     App.getInstance().getUtils().showSuccess(App.getInstance().getString(isBuyOrSell ? R.string.success_buy : R.string.success_sell));
                     context.requestSuccess();
+                    bottomSheetDialog.hide();
                 }
             });
 
         }
+    }
+
+    private void handleError(final StockContatiner context, Response<BuyAndSellResponse> response) throws IOException {
+        Converter<ResponseBody, FieldErrorResponse> errorConverter =
+                App.getInstance().getRetrofit().responseBodyConverter(FieldErrorResponse.class, new Annotation[0]);
+        final FieldErrorResponse errorResponse = errorConverter.convert(response.errorBody());
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (FieldErrorResponse.InvalidField invalidField : errorResponse.invalidFields) {
+                    App.getInstance().getUtils().showError(invalidField.message);
+                }
+                context.requestError();
+            }
+        });
     }
 
 }

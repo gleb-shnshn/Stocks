@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
         android:background="@color/grey"
+        app:layout_constraintTop_toTopOf="parent"
         android:contentInsetLeft="0dp"
         android:contentInsetStart="0dp"
         android:elevation="10dp"

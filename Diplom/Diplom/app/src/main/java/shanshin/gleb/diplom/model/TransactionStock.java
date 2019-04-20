@@ -5,21 +5,21 @@ import com.google.gson.annotations.SerializedName;
 public class TransactionStock {
 
     @SerializedName("transactionId")
-    int transactionId;
+    public int transactionId;
 
     @SerializedName("stock")
-    Stock stock;
+    public Stock stock;
 
     @SerializedName("amount")
-    int amount;
+    public int amount;
 
     @SerializedName("totalPrice")
-    float totalPrice;
+    public float totalPrice;
 
     @SerializedName("date")
-    String date;
+    public String date;
 
     @SerializedName("type")
-    String type;
+    public String type;
 
 }

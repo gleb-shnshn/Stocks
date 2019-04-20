@@ -2,6 +2,11 @@ package shanshin.gleb.diplom;
 
 import com.muddzdev.styleabletoast.StyleableToast;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import shanshin.gleb.diplom.model.Stock;
+
 public class GeneralUtils {
 
     public void showError(String errorMessage) {
@@ -41,4 +46,14 @@ public class GeneralUtils {
                 .backgroundColor(App.getInstance().getResources().getColor(R.color.successColor))
                 .show();
     }
+
+    public ArrayList<Stock> localQuery(String query, List<Stock> stocks) {
+        ArrayList<Stock> newStocks = new ArrayList<>();
+        for (Stock stock : stocks) {
+            if (stock.name.contains(query))
+                newStocks.add(stock);
+        }
+        return newStocks;
+    }
+
 }

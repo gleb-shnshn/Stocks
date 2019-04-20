@@ -5,6 +5,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 import shanshin.gleb.diplom.model.StockAmountAndId;
 import shanshin.gleb.diplom.responses.BuyAndSellResponse;
 import shanshin.gleb.diplom.responses.TransactionHistoryResponse;
@@ -18,6 +19,6 @@ public interface TransactionApi {
     Call<BuyAndSellResponse> sellStocks(@Header("Authorization") String accessToken, @Body StockAmountAndId stockAmountAndId);
 
     @GET("/api/transaction/history")
-    Call<TransactionHistoryResponse> getTransactionHistory(@Header("Authorization") String accessToken);
+    Call<TransactionHistoryResponse> getTransactionHistory(@Header("Authorization") String accessToken, @Query("search") String search, @Query("count") int count);
 
 }

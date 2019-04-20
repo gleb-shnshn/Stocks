@@ -153,4 +153,7 @@ public class MainActivity extends AppCompatActivity {
         return new LoginAndPassword(login, password);
     }
 
+    @Override
+    public void onBackPressed() {
+    }
 }

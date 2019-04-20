@@ -2,6 +2,7 @@ package shanshin.gleb.diplom;
 
 import android.app.Application;
 import android.content.Intent;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -9,6 +10,7 @@ import com.google.gson.GsonBuilder;
 import java.io.IOException;
 
 import okhttp3.OkHttpClient;
+import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -65,14 +67,15 @@ public class App extends Application {
 
     public void updateTokens() {
         AuthApi authApi = getInstance().getRetrofit().create(AuthApi.class);
+        Call<AuthSuccessResponse> call = authApi.refreshToken(App.getInstance().getDataHandler().getAccessToken(), new RefreshToken(App.getInstance().getDataHandler().getRefreshToken()));
         try {
-            Response<AuthSuccessResponse> response = authApi.refreshToken(App.getInstance().getDataHandler().getAccessToken(), new RefreshToken(App.getInstance().getDataHandler().getRefreshToken())).execute();
+            App.getInstance().getDataHandler().saveTokens("", "");
+            Response<AuthSuccessResponse> response = call.execute();
             if (response.code() != 401) {
                 AuthSuccessResponse successResponse = response.body();
                 App.getInstance().getDataHandler().saveTokens(successResponse.accessToken, successResponse.refreshToken);
             } else {
                 startActivity(new Intent(this, MainActivity.class));
-                App.getInstance().getDataHandler().saveTokens("", "");
             }
         } catch (IOException e) {
             e.printStackTrace();

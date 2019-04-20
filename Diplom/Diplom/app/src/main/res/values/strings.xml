@@ -5,4 +5,7 @@
     <string name="sell">Продать</string>
     <string name="success_buy">Успешно куплено</string>
     <string name="success_sell">Успешно продано</string>
+    <string name="transaction_history_title">История транзакций</string>
+    <string name="stock_search_title">Акции</string>
+    <string name="wrong_code_exception">\"WrongActivityCodeException(Have you put extra to Intent?)\"</string>
 </resources>

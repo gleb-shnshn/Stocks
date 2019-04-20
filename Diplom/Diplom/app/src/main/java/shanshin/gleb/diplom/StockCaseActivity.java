@@ -2,18 +2,20 @@ package shanshin.gleb.diplom;
 
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 
-import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.View;
 import android.widget.TextView;
+
 import androidx.appcompat.widget.Toolbar;
 
 import com.ethanhua.skeleton.RecyclerViewSkeletonScreen;
@@ -52,8 +54,12 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stock_case);
         initializeViews();
-
         setSkeletonLoading();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         getInfoAboutAccount();
     }
 
@@ -116,7 +122,7 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
     private void fillActivityView(InfoResponse infoResponse) {
         nameView.setText(infoResponse.name);
         balanceView.setText(infoResponse.balance + "\u20BD");
-        stocksView.setAdapter(new StockAdapter(this, infoResponse.stocks));
+        stocksView.setAdapter(new StockAdapter(this, infoResponse.stocks, null));
 
     }
 
@@ -144,7 +150,7 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
     }
 
     public void switchToSearchStocks(View view) {
-        startActivity(new Intent(this, StockSearchActivity.class));
+        switchToSearchActivity(StockSearchActivity.SEARCH_STOCKS);
     }
 
     @Override
@@ -162,7 +168,13 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
 
     }
 
+    public void switchToSearchActivity(int activityCode) {
+        Intent intent = new Intent(this, StockSearchActivity.class);
+        intent.putExtra("activityCode", activityCode);
+        startActivity(intent);
+    }
+
     public void switchToTransactionHistory(View view) {
-        startActivity(new Intent(this, TransactionHistoryActivity.class));
+        switchToSearchActivity(StockSearchActivity.TRANSACTION_HISTORY);
     }
 }
