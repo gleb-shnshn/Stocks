@@ -26,12 +26,14 @@ import com.ethanhua.skeleton.ViewSkeletonScreen;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import shanshin.gleb.diplom.api.AccountApi;
+import shanshin.gleb.diplom.model.Stock;
 import shanshin.gleb.diplom.model.UniversalStock;
 import shanshin.gleb.diplom.responses.InfoResponse;
 
@@ -44,6 +46,7 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
     private TextView nameView, balanceView;
     private FloatingActionButton fabView;
     private Toolbar toolbar;
+    private TextView noStocks;
     private RelativeLayout cardView;
     private StockAdapter stockAdapter;
     private BottomSheetDialog bottomSheetDialog;
@@ -72,6 +75,7 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
     private void initializeViews() {
         cardView = findViewById(R.id.card);
         nameView = findViewById(R.id.name);
+        noStocks = findViewById(R.id.noStocks);
         toolbar = findViewById(R.id.main_toolbar);
         balanceView = findViewById(R.id.balance);
         fabView = findViewById(R.id.addFloatingButton);
@@ -133,7 +137,8 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
         balanceView.setText(App.getInstance().getUtils().formatFloat(2, infoResponse.balance) + getString(R.string.currency));
         stocksView.setAdapter(stockAdapter);
         stockAdapter.setStocks(App.getInstance().getMapUtils().mapStocksToUniversalStocks(infoResponse.stocks, null));
-
+        noStocks.setVisibility(stockAdapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
+        stocksView.setLayoutFrozen(stockAdapter.getItemCount() < 7);
     }
 
     private void cancelSkeletonLoading() {

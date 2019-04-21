@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
@@ -62,7 +63,7 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
 
         Glide
                 .with(inflater.getContext())
-                .load(App.getInstance().getString(R.string.server_url) + stock.iconUrl.substring(1))
+                .load(App.getInstance().getString(R.string.server_url) + stock.iconUrl)
                 .centerCrop()
                 .placeholder(R.drawable.white_circle)
                 .into(viewHolder.icon);
@@ -77,7 +78,6 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
 
         viewHolder.price.setText(stock.priceField);
         viewHolder.priceEnd.setText(stock.priceEndField);
-        viewHolder.price.forceLayout();
 
         viewHolder.delta.setText(stock.deltaField);
         if (activityCode != null && activityCode == SearchActivity.TRANSACTION_HISTORY) {

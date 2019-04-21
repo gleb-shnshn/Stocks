@@ -9,13 +9,13 @@
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
         android:background="@color/grey"
-        app:layout_constraintTop_toTopOf="parent"
-        android:contentInsetLeft="0dp"
         android:contentInsetStart="0dp"
+        android:contentInsetLeft="0dp"
         android:elevation="10dp"
         android:layoutDirection="rtl"
         app:contentInsetLeft="0dp"
         app:contentInsetStart="0dp"
+        app:layout_constraintTop_toTopOf="parent"
         app:theme="@style/AppTheme.Toolbar">
 
         <LinearLayout
@@ -43,12 +43,19 @@
         </LinearLayout>
     </androidx.appcompat.widget.Toolbar>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/stocksView"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="none"
-        android:layout_marginTop="?actionBarSize"/>
+        android:layout_marginTop="?actionBarSize">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/stocksView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

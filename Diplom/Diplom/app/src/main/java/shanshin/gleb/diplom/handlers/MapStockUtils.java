@@ -19,7 +19,7 @@ public class MapStockUtils {
             uStock.redOrGreen = tStock.type.equals("sell");
             uStock.deltaField = App.getInstance().getUtils().formatDate(tStock.date);
 
-            uStock.iconUrl = tStock.stock.iconUrl;
+            uStock.iconUrl = tStock.stock.iconUrl.substring(1);
             App.getInstance().getUtils().setPriceAndPriceEndValue(uStock, tStock.totalPrice);
 
             newStocks.add(uStock);
@@ -45,7 +45,7 @@ public class MapStockUtils {
             String arrow = stock.priceDelta < 0 ? App.getInstance().getString(R.string.arrowDown) : App.getInstance().getString(R.string.arrowUp);
             uStock.deltaField = arrow + stock.priceDelta + App.getInstance().getString(R.string.currency) + String.format("(%s%%)", deltaPercents);
 
-            uStock.iconUrl = stock.iconUrl;
+            uStock.iconUrl = stock.iconUrl.substring(1);
             App.getInstance().getUtils().setPriceAndPriceEndValue(uStock, stock.price);
 
             uStock.id = stock.id;

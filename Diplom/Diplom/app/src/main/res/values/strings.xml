@@ -12,4 +12,5 @@
     <string name="pcs"> шт.</string>
     <string name="arrowDown">↓</string>
     <string name="arrowUp">↑</string>
+    <string name="no_stocks">Нет купленных акций</string>
 </resources>

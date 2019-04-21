@@ -56,12 +56,32 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/stocksView"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="none" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/noStocks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:paddingTop="@dimen/spacing_big"
+                android:textSize="@dimen/text_medium"
+                android:scrollbars="none"
+                android:visibility="gone"
+                android:text="@string/no_stocks" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/stocksView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="none" />
+
+        </LinearLayout>
+
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/main.toolbar"
@@ -129,7 +149,7 @@
         android:textSize="30sp"
         app:finalHeight="?actionBarSize"
         app:finalToolbarHeight="?attr/actionBarSize"
-        app:finalYPosition="@dimen/spacing_small"
+        app:finalYPosition="@dimen/spacing_medium"
         app:layout_behavior=".BalanceBehavior" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

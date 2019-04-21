@@ -19,6 +19,7 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,19 +34,21 @@ public class SearchActivity extends AppCompatActivity implements StockContatiner
     static final int NEED_UPDATE = 211;
     static final int REQUEST_CODE = 582;
 
-    SearchView searchView;
-    TextView titleText;
-    StocksApi stocksApi;
-    TransactionApi transactionApi;
-    RecyclerView stocksView;
-    StockAdapter stockAdapter;
-    String lastQuery = "";
-    BottomSheetDialog bottomSheetDialog;
     final int DEFAULT_COUNT = 50;
+
     static final int TRANSACTION_HISTORY = 1;
     static final int SEARCH_STOCKS = 2;
-    int activityCode;
 
+    private SearchView searchView;
+    private TextView titleText;
+    private StocksApi stocksApi;
+    private TransactionApi transactionApi;
+    private RecyclerView stocksView;
+    private StockAdapter stockAdapter;
+    private String lastQuery = "";
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private BottomSheetDialog bottomSheetDialog;
+    private int activityCode;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -85,6 +88,14 @@ public class SearchActivity extends AppCompatActivity implements StockContatiner
             }
         });
 
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                updateStockList(lastQuery);
+            }
+        });
+
         titleText = findViewById(R.id.title);
 
         activityCode = getIntent().getIntExtra("activityCode", 0);
@@ -111,6 +122,7 @@ public class SearchActivity extends AppCompatActivity implements StockContatiner
     }
 
     private void updateStockList(String query) {
+        swipeRefreshLayout.setRefreshing(true);
         int itemCount = stockAdapter.getItemCount();
         int lastLength = lastQuery.length();
 
@@ -152,6 +164,7 @@ public class SearchActivity extends AppCompatActivity implements StockContatiner
     }
 
     private boolean handleResponseErrors(boolean isSuccessful, ResponseBody errorBody) throws IOException {
+        swipeRefreshLayout.setRefreshing(false);
         if (!isSuccessful && errorBody != null) {
             App.getInstance().getErrorHandler().handleDefaultError(errorBody);
             return false;
