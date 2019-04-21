@@ -24,13 +24,21 @@ import shanshin.gleb.diplom.responses.AuthSuccessResponse;
 
 public class App extends Application {
     private static App instance;
-    String server;
-    Gson gson;
     private Retrofit retrofit;
     private SharedPreferencesHandler sharedPrefsHandler;
     private GeneralUtils utils;
     private MapStockUtils mapUtils;
     private ErrorHandler errorHandler;
+    private int activityCode;
+    private String query;
+
+    public int getActivityCode() {
+        return activityCode;
+    }
+
+    public void setActivityCode(int activityCode) {
+        this.activityCode = activityCode;
+    }
 
     public BottomDialogHandler getDialogHandler() {
         return dialogHandler;
@@ -42,8 +50,8 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
-        server = getResources().getString(R.string.server_url);
-        gson = new GsonBuilder().create();
+        String server = getResources().getString(R.string.server_url);
+        Gson gson = new GsonBuilder().create();
         sharedPrefsHandler = new SharedPreferencesHandler();
         utils = new GeneralUtils();
         dialogHandler = new BottomDialogHandler();
@@ -100,5 +108,13 @@ public class App extends Application {
 
     public SharedPreferencesHandler getDataHandler() {
         return sharedPrefsHandler;
+    }
+
+    public String getQuery() {
+        return query;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
     }
 }

@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.paging.PagedListAdapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,25 +17,24 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import shanshin.gleb.diplom.model.UniversalStock;
 
-public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> {
-    private List<UniversalStock> stocks;
+public class StockAdapter extends PagedListAdapter<UniversalStock, StockAdapter.ViewHolder> {
     private StockContatiner stockContatiner;
     private LayoutInflater inflater;
+    private ArrayList<UniversalStock> stocks;
     private int downColor, upColor, greyColor;
     private Drawable upDrawable, downDrawable;
     private Integer activityCode = null;
 
     StockAdapter() {
-        stocks = new ArrayList<>();
+        super(DIFF_CALLBACK);
     }
 
     StockAdapter(Context ctx, ArrayList<UniversalStock> stocks, Integer activityCode) {
+        super(DIFF_CALLBACK);
         this.stocks = stocks;
-
         this.stockContatiner = (StockContatiner) ctx;
         this.inflater = LayoutInflater.from(ctx);
 
@@ -58,7 +58,7 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        UniversalStock stock = stocks.get(i);
+        UniversalStock stock = activityCode == null ? stocks.get(i) : getItem(i);
         viewHolder.stock = stock;
 
         Glide
@@ -91,18 +91,14 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
 
     }
 
-    public void setStocks(ArrayList<UniversalStock> newStocks) {
-        stocks = newStocks;
-        notifyDataSetChanged();
-    }
-
     @Override
     public int getItemCount() {
-        return stocks.size();
+        return activityCode == null ? stocks.size() : super.getItemCount();
     }
 
-    public List<UniversalStock> getStocks() {
-        return stocks;
+    public void setStocks(ArrayList<UniversalStock> newStocks) {
+        notifyDataSetChanged();
+        this.stocks = newStocks;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -128,5 +124,18 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
             });
         }
     }
+
+    private static DiffUtil.ItemCallback<UniversalStock> DIFF_CALLBACK =
+            new DiffUtil.ItemCallback<UniversalStock>() {
+                @Override
+                public boolean areItemsTheSame(UniversalStock oldStock, UniversalStock newStock) {
+                    return oldStock.id == newStock.id;
+                }
+
+                @Override
+                public boolean areContentsTheSame(UniversalStock oldStock, UniversalStock newStock) {
+                    return oldStock.equals(newStock);
+                }
+            };
 
 }

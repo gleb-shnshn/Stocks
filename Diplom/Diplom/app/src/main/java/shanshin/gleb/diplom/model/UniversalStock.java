@@ -5,4 +5,7 @@ public class UniversalStock {
     public boolean redOrGreen;
     public int id;
 
+    public boolean equals(UniversalStock uStock) {
+        return this.priceField.equals(uStock.priceField) && this.priceEndField.equals(uStock.priceEndField);
+    }
 }

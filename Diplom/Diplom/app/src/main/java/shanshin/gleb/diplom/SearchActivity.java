@@ -7,6 +7,9 @@ import androidx.annotation.Nullable;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.paging.PagedList;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,39 +19,23 @@ import android.widget.SearchView;
 import android.widget.TextView;
 
 
-import java.io.IOException;
-import java.util.ArrayList;
-
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import shanshin.gleb.diplom.api.StocksApi;
-import shanshin.gleb.diplom.api.TransactionApi;
 import shanshin.gleb.diplom.model.UniversalStock;
-import shanshin.gleb.diplom.responses.StocksResponse;
-import shanshin.gleb.diplom.responses.TransactionHistoryResponse;
+import shanshin.gleb.diplom.pagination.StockViewModel;
 
 public class SearchActivity extends AppCompatActivity implements StockContatiner {
     static final int NEED_UPDATE = 211;
     static final int REQUEST_CODE = 582;
 
-    final int DEFAULT_COUNT = 50;
+    public static final int TRANSACTION_HISTORY = 1;
+    public static final int SEARCH_STOCKS = 2;
 
-    static final int TRANSACTION_HISTORY = 1;
-    static final int SEARCH_STOCKS = 2;
-
-    private SearchView searchView;
     private TextView titleText;
-    private StocksApi stocksApi;
-    private TransactionApi transactionApi;
-    private RecyclerView stocksView;
-    private StockAdapter stockAdapter;
     private String lastQuery = "";
     private SwipeRefreshLayout swipeRefreshLayout;
     private BottomSheetDialog bottomSheetDialog;
     private int activityCode;
+    private StockViewModel stockViewModel;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,11 +43,10 @@ public class SearchActivity extends AppCompatActivity implements StockContatiner
         setResult(0);
         setContentView(R.layout.activity_search);
         initializeViews();
-        updateStockList("");
     }
 
     private void initializeViews() {
-        searchView = findViewById(R.id.searchView);
+        SearchView searchView = findViewById(R.id.searchView);
         searchView.setMaxWidth(Integer.MAX_VALUE);
         searchView.setOnSearchClickListener(new View.OnClickListener() {
             @Override
@@ -93,27 +79,36 @@ public class SearchActivity extends AppCompatActivity implements StockContatiner
             @Override
             public void onRefresh() {
                 updateStockList(lastQuery);
+                swipeRefreshLayout.setRefreshing(false);
             }
         });
 
         titleText = findViewById(R.id.title);
 
         activityCode = getIntent().getIntExtra("activityCode", 0);
+        App.getInstance().setActivityCode(activityCode);
         if (activityCode == TRANSACTION_HISTORY) {
             titleText.setText(getString(R.string.transaction_history_title));
-            transactionApi = App.getInstance().getRetrofit().create(TransactionApi.class);
         } else if (activityCode == SEARCH_STOCKS) {
             titleText.setText(getString(R.string.stock_search_title));
-            stocksApi = App.getInstance().getRetrofit().create(StocksApi.class);
         } else
             throw new RuntimeException(getString(R.string.wrong_code_exception));
 
 
-        stocksView = findViewById(R.id.stocksView);
-        stocksView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-        stockAdapter = new StockAdapter(this, new ArrayList<UniversalStock>(), activityCode);
-        stocksView.setAdapter(stockAdapter);
+        RecyclerView stocksView = findViewById(R.id.stocksView);
+        stocksView.setLayoutManager(new LinearLayoutManager(this));
         stocksView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        stocksView.setHasFixedSize(true);
+        stockViewModel = ViewModelProviders.of(this).get(StockViewModel.class);
+        final StockAdapter stockAdapter = new StockAdapter(this, null, activityCode);
+        Observer<PagedList<UniversalStock>> observer = new Observer<PagedList<UniversalStock>>() {
+            @Override
+            public void onChanged(@Nullable PagedList<UniversalStock> items) {
+                stockAdapter.submitList(items);
+            }
+        };
+        stockViewModel.getStockPagedList().observe(this, observer);
+        stocksView.setAdapter(stockAdapter);
 
         bottomSheetDialog = new BottomSheetDialog(this);
         View sheetView = getLayoutInflater().inflate(R.layout.bottom_dialog_layout, null);
@@ -122,69 +117,10 @@ public class SearchActivity extends AppCompatActivity implements StockContatiner
     }
 
     private void updateStockList(String query) {
-        swipeRefreshLayout.setRefreshing(true);
-        int itemCount = stockAdapter.getItemCount();
-        int lastLength = lastQuery.length();
-
-        stockAdapter.setStocks(App.getInstance().getUtils().localQuery(query, stockAdapter.getStocks()));
         lastQuery = query;
+        App.getInstance().setQuery(query);
+        stockViewModel.getDataSourceFactory().updatedQuery();
 
-        if (lastLength < query.length() && itemCount < DEFAULT_COUNT) {
-            return;
-        }
-        if (activityCode == TRANSACTION_HISTORY)
-            transactionApi.getTransactionHistory(App.getInstance().getDataHandler().getAccessToken(), query, DEFAULT_COUNT, 0).enqueue(new Callback<TransactionHistoryResponse>() {
-                @Override
-                public void onResponse(Call<TransactionHistoryResponse> call, Response<TransactionHistoryResponse> response) {
-                    try {
-                        handleHistoryResponse(response);
-                    } catch (Exception ignored) {
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<TransactionHistoryResponse> call, Throwable t) {
-                }
-            });
-        else
-            stocksApi.getStocksWithOffset(App.getInstance().getDataHandler().getAccessToken(), query, DEFAULT_COUNT, 0).enqueue(new Callback<StocksResponse>() {
-                @Override
-                public void onResponse(Call<StocksResponse> call, Response<StocksResponse> response) {
-                    try {
-                        handleStocksResponse(response);
-                    } catch (Exception ignored) {
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<StocksResponse> call, Throwable t) {
-
-                }
-            });
-    }
-
-    private boolean handleResponseErrors(boolean isSuccessful, ResponseBody errorBody) throws IOException {
-        swipeRefreshLayout.setRefreshing(false);
-        if (!isSuccessful && errorBody != null) {
-            App.getInstance().getErrorHandler().handleDefaultError(errorBody);
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    private void handleHistoryResponse(Response<TransactionHistoryResponse> response) throws IOException {
-        if (handleResponseErrors(response.isSuccessful(), response.errorBody())) {
-            TransactionHistoryResponse transactionResponse = response.body();
-            stockAdapter.setStocks(App.getInstance().getMapUtils().mapTransactionStocksToUniversalStocks(transactionResponse.items));
-        }
-    }
-
-    private void handleStocksResponse(Response<StocksResponse> response) throws IOException {
-        if (handleResponseErrors(response.isSuccessful(), response.errorBody())) {
-            StocksResponse stocksResponse = response.body();
-            stockAdapter.setStocks(App.getInstance().getMapUtils().mapStocksToUniversalStocks(stocksResponse.items, activityCode));
-        }
     }
 
     @Override
