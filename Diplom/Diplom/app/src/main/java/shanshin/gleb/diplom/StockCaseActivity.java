@@ -8,13 +8,14 @@ import androidx.annotation.NonNull;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
@@ -25,6 +26,7 @@ import com.ethanhua.skeleton.ViewSkeletonScreen;
 
 
 import java.lang.annotation.Annotation;
+import java.util.Locale;
 
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import okhttp3.ResponseBody;
@@ -39,16 +41,20 @@ import shanshin.gleb.diplom.responses.InfoResponse;
 
 
 public class StockCaseActivity extends AppCompatActivity implements StockContatiner {
-    RecyclerView stocksView;
-    SwipeRefreshLayout swipeRefreshLayout;
-    RecyclerViewSkeletonScreen skeletonStocks;
-    ViewSkeletonScreen skeletonHeader;
-    TextView nameView, balanceView;
-    FloatingActionButton fabView;
-    Toolbar toolbar;
-    CardView cardView;
-    BottomSheetDialog bottomSheetDialog;
+    private RecyclerView stocksView;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private RecyclerViewSkeletonScreen skeletonStocks;
+    private ViewSkeletonScreen skeletonHeader;
+    private TextView nameView, balanceView;
+    private FloatingActionButton fabView;
+    private Toolbar toolbar;
+    private RelativeLayout cardView;
+    private BottomSheetDialog bottomSheetDialog;
 
+
+    public Toolbar getToolbar() {
+        return toolbar;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,12 +62,14 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
         setContentView(R.layout.activity_stock_case);
         initializeViews();
         setSkeletonLoading();
+        getInfoAboutAccount();
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        getInfoAboutAccount();
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SearchActivity.REQUEST_CODE && resultCode == SearchActivity.NEED_UPDATE)
+            getInfoAboutAccount();
     }
 
     private void initializeViews() {
@@ -124,8 +132,8 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
 
     private void fillActivityView(InfoResponse infoResponse) {
         nameView.setText(infoResponse.name);
-        balanceView.setText(String.format("%.2f",infoResponse.balance) + "\u20BD ");
-        stocksView.setAdapter(new StockAdapter(this, infoResponse.stocks, null,  null));
+        balanceView.setText(String.format(Locale.ENGLISH,"%.2f", infoResponse.balance) + "\u20BD  ");
+        stocksView.setAdapter(new StockAdapter(this, infoResponse.stocks, null, null));
 
     }
 
@@ -153,7 +161,7 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
     }
 
     public void switchToSearchStocks(View view) {
-        switchToSearchActivity(StockSearchActivity.SEARCH_STOCKS);
+        switchToSearchActivity(SearchActivity.SEARCH_STOCKS);
     }
 
     @Override
@@ -172,12 +180,12 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
     }
 
     public void switchToSearchActivity(int activityCode) {
-        Intent intent = new Intent(this, StockSearchActivity.class);
+        Intent intent = new Intent(this, SearchActivity.class);
         intent.putExtra("activityCode", activityCode);
-        startActivity(intent);
+        startActivityForResult(intent, SearchActivity.REQUEST_CODE);
     }
 
     public void switchToTransactionHistory(View view) {
-        switchToSearchActivity(StockSearchActivity.TRANSACTION_HISTORY);
+        switchToSearchActivity(SearchActivity.TRANSACTION_HISTORY);
     }
 }

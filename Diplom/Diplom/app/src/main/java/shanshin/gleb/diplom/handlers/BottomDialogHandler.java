@@ -1,4 +1,4 @@
-package shanshin.gleb.diplom;
+package shanshin.gleb.diplom.handlers;
 
 import android.view.View;
 import android.widget.EditText;
@@ -12,6 +12,10 @@ import java.lang.annotation.Annotation;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
 import retrofit2.Response;
+import shanshin.gleb.diplom.App;
+import shanshin.gleb.diplom.LoadingButton;
+import shanshin.gleb.diplom.R;
+import shanshin.gleb.diplom.StockContatiner;
 import shanshin.gleb.diplom.api.TransactionApi;
 import shanshin.gleb.diplom.model.Stock;
 import shanshin.gleb.diplom.model.StockAmountAndId;
@@ -27,6 +31,7 @@ public class BottomDialogHandler {
         dialogButton.setText(App.getInstance().getString(isBuyOrSell ? R.string.buy : R.string.sell));
         bottomSheetDialog.show();
         final EditText countField = bottomSheetDialog.findViewById(R.id.countInput);
+        countField.setText("");
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

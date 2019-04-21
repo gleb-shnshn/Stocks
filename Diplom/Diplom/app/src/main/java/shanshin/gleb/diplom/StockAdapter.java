@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +18,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -35,7 +32,7 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
     private int downColor, upColor, greyColor;
     private Drawable upDrawable, downDrawable;
     private Integer activityCode = null;
-    private DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.ENGLISH);
+    private DateFormat df = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
     private DateFormat dfNew = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
 
     StockAdapter() {
@@ -73,11 +70,10 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        if (activityCode == null || activityCode == StockSearchActivity.SEARCH_STOCKS) {
+        if (activityCode == null || activityCode == SearchActivity.SEARCH_STOCKS) {
             bindUsualViewHolder(viewHolder, i);
         } else {
             bindTransactionViewHolder(viewHolder, i);
-
         }
     }
 
@@ -87,10 +83,17 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
         viewHolder.line.setVisibility(View.GONE);
         viewHolder.plusOrMinus.setText(transactionStock.type.equals("sell") ? "−" : "+");
         viewHolder.plusOrMinus.setTextColor(transactionStock.type.equals("sell") ? downColor : upColor);
-        viewHolder.count.setText(transactionStock.stock.code + " • " + transactionStock.amount + " шт.");
-        viewHolder.price.setText(String.format("%.2f", transactionStock.totalPrice) + " руб.");
+        viewHolder.count.setText(transactionStock.stock.code + " • " + transactionStock.amount + getString(R.string.pcs));
+        setPriceAndPriceEndValue(viewHolder, transactionStock.totalPrice);
         viewHolder.delta.setText(formatDate(transactionStock.date));
         viewHolder.delta.setTextColor(greyColor);
+    }
+
+    private void setPriceAndPriceEndValue(ViewHolder viewHolder, float value) {
+        String priceFull = formatFloat(2, value);
+        viewHolder.price.setText(priceFull.substring(0, priceFull.length() - 3));
+        viewHolder.priceEnd.setText(priceFull.substring(priceFull.length() - 3) + getString(R.string.currency));
+        viewHolder.price.forceLayout();
     }
 
     private String formatDate(String date) {
@@ -98,9 +101,8 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
             try {
                 return dfNew.format(df.parse(date));
             } catch (ParseException e) {
-                Log.d("tagged", e.toString());
+                return "";
             }
-            return "";
         } else {
             return date;
         }
@@ -125,17 +127,30 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
         Stock stock = stocks.get(i);
         bindGeneralViews(viewHolder, stock);
         viewHolder.stock = stock;
+
         if (activityCode == null)
             viewHolder.count.setText(stock.count + " шт.");
         else
             viewHolder.count.setText(stock.code);
-        viewHolder.price.setText(String.format("%.2f", stock.price) + " руб.");
+
+        setPriceAndPriceEndValue(viewHolder, stock.price);
+
         viewHolder.delta.setTextColor(stock.priceDelta < 0 ? downColor : upColor);
         viewHolder.plusOrMinus.setVisibility(View.GONE);
         viewHolder.line.setBackground(stock.priceDelta < 0 ? downDrawable : upDrawable);
-        viewHolder.delta.setText((stock.priceDelta < 0 ? "↓" : "↑") + stock.priceDelta + " руб(" + String.format("%.4f", stock.priceDelta / stock.price) + "%)");
+
+        String deltaPercents = formatFloat(4, stock.priceDelta / stock.price);
+        String arrow = stock.priceDelta < 0 ? getString(R.string.arrowDown) : getString(R.string.arrowUp);
+        viewHolder.delta.setText(arrow + stock.priceDelta + getString(R.string.currency) + String.format("(%s%%)", deltaPercents));
     }
 
+    private String formatFloat(int length, float value) {
+        return String.format(Locale.ENGLISH, "%." + length + "f", value);
+    }
+
+    private String getString(int resId) {
+        return App.getInstance().getString(resId);
+    }
 
     public void setStocks(ArrayList<Stock> newStocks) {
         stocks = newStocks;
@@ -144,7 +159,7 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        if (activityCode == null || activityCode == StockSearchActivity.SEARCH_STOCKS)
+        if (activityCode == null || activityCode == SearchActivity.SEARCH_STOCKS)
             return stocks.size();
         else
             return transactionStocks.size();
@@ -164,7 +179,7 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        final TextView name, count, price, delta, plusOrMinus;
+        final TextView name, count, price, priceEnd, delta, plusOrMinus;
         final View line;
         final ImageView icon;
         Stock stock;
@@ -174,6 +189,7 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
             name = v.findViewById(R.id.stock_name);
             count = v.findViewById(R.id.stock_count);
             price = v.findViewById(R.id.stock_price);
+            priceEnd = v.findViewById(R.id.stock_price_end);
             delta = v.findViewById(R.id.stock_delta);
             plusOrMinus = v.findViewById(R.id.plusOrMinus);
             line = v.findViewById(R.id.line);

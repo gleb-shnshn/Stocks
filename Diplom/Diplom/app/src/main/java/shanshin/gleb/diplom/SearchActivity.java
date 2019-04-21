@@ -34,7 +34,10 @@ import shanshin.gleb.diplom.responses.DefaultErrorResponse;
 import shanshin.gleb.diplom.responses.StocksResponse;
 import shanshin.gleb.diplom.responses.TransactionHistoryResponse;
 
-public class StockSearchActivity extends AppCompatActivity implements StockContatiner {
+public class SearchActivity extends AppCompatActivity implements StockContatiner {
+    static final int NEED_UPDATE = 211;
+    static final int REQUEST_CODE = 582;
+
     SearchView searchView;
     TextView titleText;
     StocksApi stocksApi;
@@ -52,6 +55,7 @@ public class StockSearchActivity extends AppCompatActivity implements StockConta
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setResult(0);
         setContentView(R.layout.activity_search);
         initializeViews();
         updateStockList("");
@@ -142,7 +146,7 @@ public class StockSearchActivity extends AppCompatActivity implements StockConta
                 }
             });
         else
-            stocksApi.getStocksWithOffset(App.getInstance().getDataHandler().getAccessToken(), query, DEFAULT_COUNT,0).enqueue(new Callback<StocksResponse>() {
+            stocksApi.getStocksWithOffset(App.getInstance().getDataHandler().getAccessToken(), query, DEFAULT_COUNT, 0).enqueue(new Callback<StocksResponse>() {
                 @Override
                 public void onResponse(Call<StocksResponse> call, Response<StocksResponse> response) {
                     try {
@@ -187,11 +191,15 @@ public class StockSearchActivity extends AppCompatActivity implements StockConta
 
     @Override
     public void stockClicked(final Stock stock) {
+        if (activityCode == TRANSACTION_HISTORY)
+            return;
+
         App.getInstance().getDialogHandler().initializeDialog(bottomSheetDialog, stock, true, this);
     }
 
     @Override
     public void requestSuccess() {
+        setResult(NEED_UPDATE);
         updateStockList(lastQuery);
 
     }

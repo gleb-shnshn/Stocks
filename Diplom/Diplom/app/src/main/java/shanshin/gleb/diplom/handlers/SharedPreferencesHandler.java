@@ -1,7 +1,9 @@
-package shanshin.gleb.diplom;
+package shanshin.gleb.diplom.handlers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import shanshin.gleb.diplom.App;
 
 public class SharedPreferencesHandler {
     private SharedPreferences sPref;

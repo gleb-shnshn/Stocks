@@ -1,10 +1,12 @@
-package shanshin.gleb.diplom;
+package shanshin.gleb.diplom.handlers;
 
 import com.muddzdev.styleabletoast.StyleableToast;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import shanshin.gleb.diplom.App;
+import shanshin.gleb.diplom.R;
 import shanshin.gleb.diplom.model.Stock;
 import shanshin.gleb.diplom.model.TransactionStock;
 

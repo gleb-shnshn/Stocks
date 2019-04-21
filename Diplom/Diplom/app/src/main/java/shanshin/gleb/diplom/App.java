@@ -2,7 +2,6 @@ package shanshin.gleb.diplom;
 
 import android.app.Application;
 import android.content.Intent;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -15,6 +14,9 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import shanshin.gleb.diplom.api.AuthApi;
+import shanshin.gleb.diplom.handlers.BottomDialogHandler;
+import shanshin.gleb.diplom.handlers.GeneralUtils;
+import shanshin.gleb.diplom.handlers.SharedPreferencesHandler;
 import shanshin.gleb.diplom.model.RefreshToken;
 import shanshin.gleb.diplom.responses.AuthSuccessResponse;
 
