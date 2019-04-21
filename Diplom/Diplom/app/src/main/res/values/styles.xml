@@ -17,9 +17,4 @@
         <item name="android:tint">@color/white</item>
     </style>
 
-
-    <declare-styleable name="LoadingButton">
-        <attr name="text" format="string" />
-    </declare-styleable>
-
 </resources>

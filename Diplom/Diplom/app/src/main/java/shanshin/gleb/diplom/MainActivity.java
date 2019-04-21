@@ -97,13 +97,7 @@ public class MainActivity extends AppCompatActivity {
                     if (response.code() == 401) {
                         App.getInstance().getUtils().showError("Неверный логин или пароль");
                     } else if (!response.isSuccessful() && response.errorBody() != null) {
-                        Converter<ResponseBody, FieldErrorResponse> errorConverter =
-                                App.getInstance().getRetrofit().responseBodyConverter(FieldErrorResponse.class, new Annotation[0]);
-                        FieldErrorResponse errorResponse = errorConverter.convert(response.errorBody());
-
-                        for (InvalidField invalidField : errorResponse.invalidFields) {
-                            App.getInstance().getUtils().showError(invalidField.message);
-                        }
+                        App.getInstance().getErrorHandler().handleFieldError(response.errorBody());
                     } else {
                         AuthSuccessResponse successResponse = response.body();
                         App.getInstance().getDataHandler().saveTokens(successResponse.accessToken, successResponse.refreshToken);

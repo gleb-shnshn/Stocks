@@ -11,8 +11,7 @@ import java.util.Locale;
 
 import shanshin.gleb.diplom.App;
 import shanshin.gleb.diplom.R;
-import shanshin.gleb.diplom.model.Stock;
-import shanshin.gleb.diplom.model.TransactionStock;
+import shanshin.gleb.diplom.model.UniversalStock;
 
 public class GeneralUtils {
 
@@ -54,22 +53,23 @@ public class GeneralUtils {
                 .show();
     }
 
-    public ArrayList<Stock> localQuery(String query, List<Stock> stocks) {
-        ArrayList<Stock> newStocks = new ArrayList<>();
-        for (Stock stock : stocks) {
-            if (stock.name.contains(query))
+    public ArrayList<UniversalStock> localQuery(String query, List<UniversalStock> stocks) {
+        ArrayList<UniversalStock> newStocks = new ArrayList<>();
+        for (UniversalStock stock : stocks) {
+            if (stock.nameField.contains(query))
                 newStocks.add(stock);
         }
         return newStocks;
     }
 
-    public ArrayList<TransactionStock> localTransactionQuery(String query, List<TransactionStock> stocks) {
-        ArrayList<TransactionStock> newStocks = new ArrayList<>();
-        for (TransactionStock transactionStock : stocks) {
-            if (transactionStock.stock.name.contains(query))
-                newStocks.add(transactionStock);
-        }
-        return newStocks;
+    public String formatFloat(int length, float value) {
+        return String.format(Locale.ENGLISH, "%." + length + "f", value);
+    }
+
+    public void setPriceAndPriceEndValue(UniversalStock uStock, float value) {
+        String priceFull = formatFloat(2, value);
+        uStock.priceField = priceFull.substring(0, priceFull.length() - 3);
+        uStock.priceEndField = priceFull.substring(priceFull.length() - 3) + App.getInstance().getString(R.string.currency);
     }
 
     public String formatDate(String date) {

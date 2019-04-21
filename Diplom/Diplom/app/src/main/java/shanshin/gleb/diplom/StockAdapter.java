@@ -16,14 +16,11 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
-import shanshin.gleb.diplom.model.Stock;
-import shanshin.gleb.diplom.model.TransactionStock;
+import shanshin.gleb.diplom.model.UniversalStock;
 
 public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> {
-    private List<Stock> stocks;
-    private List<TransactionStock> transactionStocks;
+    private List<UniversalStock> stocks;
     private StockContatiner stockContatiner;
     private LayoutInflater inflater;
     private int downColor, upColor, greyColor;
@@ -34,13 +31,14 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
         stocks = new ArrayList<>();
     }
 
-    public void initData(Context ctx, Integer activityCode) {
+    StockAdapter(Context ctx, ArrayList<UniversalStock> stocks, Integer activityCode) {
+        this.stocks = stocks;
+
         this.stockContatiner = (StockContatiner) ctx;
         this.inflater = LayoutInflater.from(ctx);
 
         this.upColor = inflater.getContext().getResources().getColor(R.color.colorPrimary);
         this.downColor = inflater.getContext().getResources().getColor(R.color.errorColor);
-
         this.greyColor = inflater.getContext().getResources().getColor(R.color.grey);
 
         this.upDrawable = inflater.getContext().getResources().getDrawable(R.color.colorPrimary);
@@ -48,12 +46,6 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
 
         this.activityCode = activityCode;
 
-    }
-
-    StockAdapter(Context ctx, List<Stock> stocks, ArrayList<TransactionStock> transactionStocks, Integer activityCode) {
-        this.stocks = stocks;
-        this.transactionStocks = transactionStocks;
-        initData(ctx, activityCode);
         notifyDataSetChanged();
     }
 
@@ -65,103 +57,59 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        if (activityCode == null || activityCode == SearchActivity.SEARCH_STOCKS) {
-            bindUsualViewHolder(viewHolder, i);
-        } else {
-            bindTransactionViewHolder(viewHolder, i);
-        }
-    }
+        UniversalStock stock = stocks.get(i);
+        viewHolder.stock = stock;
 
-    private void bindTransactionViewHolder(ViewHolder viewHolder, int i) {
-        TransactionStock transactionStock = transactionStocks.get(i);
-        bindGeneralViews(viewHolder, transactionStock.stock);
-        viewHolder.line.setBackground(transactionStock.type.equals("sell") ? downDrawable : upDrawable);
-        viewHolder.count.setText(transactionStock.stock.code + " • " + transactionStock.amount + getString(R.string.pcs));
-        setPriceAndPriceEndValue(viewHolder, transactionStock.totalPrice);
-        viewHolder.delta.setText(App.getInstance().getUtils().formatDate(transactionStock.date));
-        viewHolder.delta.setTextColor(greyColor);
-    }
-
-    private void setPriceAndPriceEndValue(ViewHolder viewHolder, float value) {
-        String priceFull = formatFloat(2, value);
-        viewHolder.price.setText(priceFull.substring(0, priceFull.length() - 3));
-        viewHolder.priceEnd.setText(priceFull.substring(priceFull.length() - 3) + getString(R.string.currency));
-        viewHolder.price.forceLayout();
-    }
-
-    private void bindGeneralViews(ViewHolder viewHolder, Stock stock) {
-        if (stock.name.length() > 10) {
-            viewHolder.name.setText(stock.name.substring(0, 9) + "..");
-        } else {
-            viewHolder.name.setText(stock.name);
-        }
         Glide
                 .with(inflater.getContext())
                 .load(App.getInstance().getString(R.string.server_url) + stock.iconUrl.substring(1))
                 .centerCrop()
                 .placeholder(R.drawable.white_circle)
                 .into(viewHolder.icon);
+
+        if (stock.nameField.length() > 10) {
+            viewHolder.name.setText(stock.nameField.substring(0, 9) + "..");
+        } else {
+            viewHolder.name.setText(stock.nameField);
+        }
+
+        viewHolder.count.setText(stock.countField);
+
+        viewHolder.price.setText(stock.priceField);
+        viewHolder.priceEnd.setText(stock.priceEndField);
+        viewHolder.price.forceLayout();
+
+        viewHolder.delta.setText(stock.deltaField);
+        if (activityCode != null && activityCode == SearchActivity.TRANSACTION_HISTORY) {
+            viewHolder.line.setBackground(stock.redOrGreen ? downDrawable : upDrawable);
+            viewHolder.delta.setTextColor(greyColor);
+        } else {
+            viewHolder.line.setVisibility(View.GONE);
+            viewHolder.delta.setTextColor(stock.redOrGreen ? downColor : upColor);
+        }
+
+
     }
 
-    private void bindUsualViewHolder(ViewHolder viewHolder, int i) {
-        Stock stock = stocks.get(i);
-        bindGeneralViews(viewHolder, stock);
-        viewHolder.stock = stock;
-
-        if (activityCode == null)
-            viewHolder.count.setText(stock.count + " шт.");
-        else
-            viewHolder.count.setText(stock.code);
-
-        setPriceAndPriceEndValue(viewHolder, stock.price);
-
-        viewHolder.delta.setTextColor(stock.priceDelta < 0 ? downColor : upColor);
-        viewHolder.line.setVisibility(View.GONE);
-
-        String deltaPercents = formatFloat(4, stock.priceDelta / stock.price);
-        String arrow = stock.priceDelta < 0 ? getString(R.string.arrowDown) : getString(R.string.arrowUp);
-        viewHolder.delta.setText(arrow + stock.priceDelta + getString(R.string.currency) + String.format("(%s%%)", deltaPercents));
-    }
-
-    private String formatFloat(int length, float value) {
-        return String.format(Locale.ENGLISH, "%." + length + "f", value);
-    }
-
-    private String getString(int resId) {
-        return App.getInstance().getString(resId);
-    }
-
-    public void setStocks(ArrayList<Stock> newStocks) {
+    public void setStocks(ArrayList<UniversalStock> newStocks) {
         stocks = newStocks;
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
-        if (activityCode == null || activityCode == SearchActivity.SEARCH_STOCKS)
-            return stocks.size();
-        else
-            return transactionStocks.size();
+        return stocks.size();
     }
 
-    public List<Stock> getStocks() {
+    public List<UniversalStock> getStocks() {
         return stocks;
-    }
-
-    public List<TransactionStock> getHistoryStocks() {
-        return transactionStocks;
-    }
-
-    public void setHistoryStocks(ArrayList<TransactionStock> items) {
-        transactionStocks = items;
-        notifyDataSetChanged();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
         final TextView name, count, price, priceEnd, delta;
         final View line;
         final ImageView icon;
-        Stock stock;
+        UniversalStock stock;
 
         ViewHolder(View v) {
             super(v);

@@ -56,7 +56,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:background="@color/grey"
-        android:text=""
         android:textColor="@color/white"/>
 
     <TextView

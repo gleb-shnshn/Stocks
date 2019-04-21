@@ -25,18 +25,14 @@ import com.ethanhua.skeleton.Skeleton;
 import com.ethanhua.skeleton.ViewSkeletonScreen;
 
 
-import java.lang.annotation.Annotation;
-import java.util.Locale;
+import java.util.ArrayList;
 
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Converter;
 import retrofit2.Response;
 import shanshin.gleb.diplom.api.AccountApi;
-import shanshin.gleb.diplom.model.Stock;
-import shanshin.gleb.diplom.responses.DefaultErrorResponse;
+import shanshin.gleb.diplom.model.UniversalStock;
 import shanshin.gleb.diplom.responses.InfoResponse;
 
 
@@ -49,6 +45,7 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
     private FloatingActionButton fabView;
     private Toolbar toolbar;
     private RelativeLayout cardView;
+    private StockAdapter stockAdapter;
     private BottomSheetDialog bottomSheetDialog;
 
 
@@ -73,10 +70,12 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
     }
 
     private void initializeViews() {
-        stocksView = findViewById(R.id.stocksView);
         cardView = findViewById(R.id.card);
         nameView = findViewById(R.id.name);
         toolbar = findViewById(R.id.main_toolbar);
+        balanceView = findViewById(R.id.balance);
+        fabView = findViewById(R.id.addFloatingButton);
+
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -84,11 +83,13 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
                 getInfoAboutAccount();
             }
         });
-        balanceView = findViewById(R.id.balance);
-        fabView = findViewById(R.id.addFloatingButton);
+
         bottomSheetDialog = new BottomSheetDialog(this);
         View sheetView = getLayoutInflater().inflate(R.layout.bottom_dialog_layout, null);
         bottomSheetDialog.setContentView(sheetView);
+
+        stocksView = findViewById(R.id.stocksView);
+        stocksView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         stocksView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -97,8 +98,8 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
                 else if (dy < 0) fabView.show();
             }
         });
+        stockAdapter = new StockAdapter(this, new ArrayList<UniversalStock>(), null);
         stocksView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-
     }
 
     private void getInfoAboutAccount() {
@@ -109,10 +110,7 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
             public void onResponse(Call<InfoResponse> call, Response<InfoResponse> response) {
                 try {
                     if (response != null && !response.isSuccessful() && response.errorBody() != null) {
-                        Converter<ResponseBody, DefaultErrorResponse> errorConverter =
-                                App.getInstance().getRetrofit().responseBodyConverter(DefaultErrorResponse.class, new Annotation[0]);
-                        DefaultErrorResponse errorResponse = errorConverter.convert(response.errorBody());
-                        App.getInstance().getUtils().showError(errorResponse.message);
+                        App.getInstance().getErrorHandler().handleDefaultError(response.errorBody());
                     } else {
                         InfoResponse infoResponse = response.body();
                         cancelSkeletonLoading();
@@ -132,8 +130,9 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
 
     private void fillActivityView(InfoResponse infoResponse) {
         nameView.setText(infoResponse.name);
-        balanceView.setText(String.format(Locale.ENGLISH, "%.2f", infoResponse.balance) + getString(R.string.currency));
-        stocksView.setAdapter(new StockAdapter(this, infoResponse.stocks, null, null));
+        balanceView.setText(App.getInstance().getUtils().formatFloat(2, infoResponse.balance) + getString(R.string.currency));
+        stocksView.setAdapter(stockAdapter);
+        stockAdapter.setStocks(App.getInstance().getMapUtils().mapStocksToUniversalStocks(infoResponse.stocks, null));
 
     }
 
@@ -148,7 +147,6 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
     public void setSkeletonLoading() {
         toolbar.setVisibility(View.GONE);
         fabView.hide();
-        stocksView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         skeletonHeader = Skeleton.bind(cardView)
                 .load(R.layout.header_skeleton)
                 .duration(1200)
@@ -165,18 +163,13 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
     }
 
     @Override
-    public void stockClicked(Stock stock) {
-        App.getInstance().getDialogHandler().initializeDialog(bottomSheetDialog, stock, false, this);
+    public void stockClicked(UniversalStock stock) {
+        App.getInstance().getDialogHandler().initializeDialog(bottomSheetDialog, stock.id, stock.nameField, false, this);
     }
 
     @Override
     public void requestSuccess() {
         getInfoAboutAccount();
-    }
-
-    @Override
-    public void requestError() {
-
     }
 
     public void switchToSearchActivity(int activityCode) {

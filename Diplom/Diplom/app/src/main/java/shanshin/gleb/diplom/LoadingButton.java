@@ -1,7 +1,6 @@
 package shanshin.gleb.diplom;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.View;
@@ -13,7 +12,7 @@ public class LoadingButton extends RelativeLayout {
 
     private ProgressBar mProgressBar;
     private TextView mTextView;
-    private String mText;
+    private String mText="";
 
     private void init() {
         setClickable(true);
@@ -52,15 +51,6 @@ public class LoadingButton extends RelativeLayout {
         mTextView.setVisibility(View.VISIBLE);
     }
 
-    private void setAttributes(Context context, AttributeSet attrs) {
-        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.LoadingButton, 0, 0);
-        try {
-            mText = ta.getString(R.styleable.LoadingButton_text);
-        } finally {
-            ta.recycle();
-        }
-    }
-
     public LoadingButton(Context context) {
         super(context);
         init();
@@ -68,13 +58,11 @@ public class LoadingButton extends RelativeLayout {
 
     public LoadingButton(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setAttributes(context, attrs);
         init();
     }
 
     public LoadingButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        setAttributes(context, attrs);
         init();
     }
 }

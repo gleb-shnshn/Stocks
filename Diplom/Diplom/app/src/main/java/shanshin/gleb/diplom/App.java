@@ -15,7 +15,9 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import shanshin.gleb.diplom.api.AuthApi;
 import shanshin.gleb.diplom.handlers.BottomDialogHandler;
+import shanshin.gleb.diplom.handlers.ErrorHandler;
 import shanshin.gleb.diplom.handlers.GeneralUtils;
+import shanshin.gleb.diplom.handlers.MapStockUtils;
 import shanshin.gleb.diplom.handlers.SharedPreferencesHandler;
 import shanshin.gleb.diplom.model.RefreshToken;
 import shanshin.gleb.diplom.responses.AuthSuccessResponse;
@@ -27,6 +29,8 @@ public class App extends Application {
     private Retrofit retrofit;
     private SharedPreferencesHandler sharedPrefsHandler;
     private GeneralUtils utils;
+    private MapStockUtils mapUtils;
+    private ErrorHandler errorHandler;
 
     public BottomDialogHandler getDialogHandler() {
         return dialogHandler;
@@ -43,6 +47,8 @@ public class App extends Application {
         sharedPrefsHandler = new SharedPreferencesHandler();
         utils = new GeneralUtils();
         dialogHandler = new BottomDialogHandler();
+        mapUtils = new MapStockUtils();
+        errorHandler = new ErrorHandler();
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(new ExpiredTokenInterceptor())
                 .build();
@@ -53,6 +59,14 @@ public class App extends Application {
                 .client(okHttpClient)
                 .build();
 
+    }
+
+    public ErrorHandler getErrorHandler() {
+        return errorHandler;
+    }
+
+    public MapStockUtils getMapUtils() {
+        return mapUtils;
     }
 
     public GeneralUtils getUtils() {
