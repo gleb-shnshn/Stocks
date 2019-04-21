@@ -14,9 +14,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -32,8 +29,6 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
     private int downColor, upColor, greyColor;
     private Drawable upDrawable, downDrawable;
     private Integer activityCode = null;
-    private DateFormat df = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
-    private DateFormat dfNew = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
 
     StockAdapter() {
         stocks = new ArrayList<>();
@@ -80,12 +75,10 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
     private void bindTransactionViewHolder(ViewHolder viewHolder, int i) {
         TransactionStock transactionStock = transactionStocks.get(i);
         bindGeneralViews(viewHolder, transactionStock.stock);
-        viewHolder.line.setVisibility(View.GONE);
-        viewHolder.plusOrMinus.setText(transactionStock.type.equals("sell") ? "−" : "+");
-        viewHolder.plusOrMinus.setTextColor(transactionStock.type.equals("sell") ? downColor : upColor);
+        viewHolder.line.setBackground(transactionStock.type.equals("sell") ? downDrawable : upDrawable);
         viewHolder.count.setText(transactionStock.stock.code + " • " + transactionStock.amount + getString(R.string.pcs));
         setPriceAndPriceEndValue(viewHolder, transactionStock.totalPrice);
-        viewHolder.delta.setText(formatDate(transactionStock.date));
+        viewHolder.delta.setText(App.getInstance().getUtils().formatDate(transactionStock.date));
         viewHolder.delta.setTextColor(greyColor);
     }
 
@@ -94,19 +87,6 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
         viewHolder.price.setText(priceFull.substring(0, priceFull.length() - 3));
         viewHolder.priceEnd.setText(priceFull.substring(priceFull.length() - 3) + getString(R.string.currency));
         viewHolder.price.forceLayout();
-    }
-
-    private String formatDate(String date) {
-        if (date.contains("T")) {
-            try {
-                return dfNew.format(df.parse(date));
-            } catch (ParseException e) {
-                return "";
-            }
-        } else {
-            return date;
-        }
-
     }
 
     private void bindGeneralViews(ViewHolder viewHolder, Stock stock) {
@@ -136,8 +116,7 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
         setPriceAndPriceEndValue(viewHolder, stock.price);
 
         viewHolder.delta.setTextColor(stock.priceDelta < 0 ? downColor : upColor);
-        viewHolder.plusOrMinus.setVisibility(View.GONE);
-        viewHolder.line.setBackground(stock.priceDelta < 0 ? downDrawable : upDrawable);
+        viewHolder.line.setVisibility(View.GONE);
 
         String deltaPercents = formatFloat(4, stock.priceDelta / stock.price);
         String arrow = stock.priceDelta < 0 ? getString(R.string.arrowDown) : getString(R.string.arrowUp);
@@ -179,7 +158,7 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        final TextView name, count, price, priceEnd, delta, plusOrMinus;
+        final TextView name, count, price, priceEnd, delta;
         final View line;
         final ImageView icon;
         Stock stock;
@@ -191,7 +170,6 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.ViewHolder> 
             price = v.findViewById(R.id.stock_price);
             priceEnd = v.findViewById(R.id.stock_price_end);
             delta = v.findViewById(R.id.stock_delta);
-            plusOrMinus = v.findViewById(R.id.plusOrMinus);
             line = v.findViewById(R.id.line);
             icon = v.findViewById(R.id.icon);
             v.setOnClickListener(new View.OnClickListener() {

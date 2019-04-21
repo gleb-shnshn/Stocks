@@ -1,33 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:paddingBottom="5dp"
-    android:paddingTop="5dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp">
 
-    <TextView
-        android:id="@+id/plusOrMinus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        android:paddingStart="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:text="+"
-        app:layout_constraintStart_toStartOf="parent"
-        android:textColor="@color/colorPrimary"
-        android:textSize="50dp"
-        />
     <View
         android:id="@+id/line"
         android:layout_width="5dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="5dp"
         android:layout_marginStart="5dp"
         android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         android:background="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/plusOrMinus"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
@@ -45,31 +33,46 @@
         android:id="@+id/stock_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:text=""
-        android:textStyle="bold"
         android:textColor="@android:color/background_dark"
         android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@id/icon"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/stock_count"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text=""
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/icon"
+        app:layout_constraintTop_toBottomOf="@+id/stock_name" />
+
     <TextView
         android:id="@+id/stock_price"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         android:text=""
         android:textColor="@color/grey"
         android:textSize="19sp"
         app:layout_constraintEnd_toStartOf="@id/stock_price_end"
         app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/stock_price_end"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginTop="4dp"
         android:text=""
         android:textColor="@color/medium_grey"
         android:textSize="19sp"
@@ -81,24 +84,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:text=""
         android:textColor="@color/colorPrimary"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/stock_price" />
-
-    <TextView
-        android:id="@+id/stock_count"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="4dp"
-        android:text=""
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/icon"
-        app:layout_constraintTop_toBottomOf="@+id/stock_name" />
+        app:layout_constraintTop_toBottomOf="@id/stock_price"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

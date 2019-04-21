@@ -132,7 +132,7 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
 
     private void fillActivityView(InfoResponse infoResponse) {
         nameView.setText(infoResponse.name);
-        balanceView.setText(String.format(Locale.ENGLISH,"%.2f", infoResponse.balance) + "\u20BD  ");
+        balanceView.setText(String.format(Locale.ENGLISH, "%.2f", infoResponse.balance) + getString(R.string.currency));
         stocksView.setAdapter(new StockAdapter(this, infoResponse.stocks, null, null));
 
     }

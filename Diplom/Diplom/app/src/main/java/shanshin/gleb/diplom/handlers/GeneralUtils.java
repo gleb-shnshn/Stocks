@@ -2,8 +2,12 @@ package shanshin.gleb.diplom.handlers;
 
 import com.muddzdev.styleabletoast.StyleableToast;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import shanshin.gleb.diplom.App;
 import shanshin.gleb.diplom.R;
@@ -11,6 +15,9 @@ import shanshin.gleb.diplom.model.Stock;
 import shanshin.gleb.diplom.model.TransactionStock;
 
 public class GeneralUtils {
+
+    private DateFormat df = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
+    private DateFormat dfNew = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
 
     public void showError(String errorMessage) {
         new StyleableToast
@@ -63,5 +70,18 @@ public class GeneralUtils {
                 newStocks.add(transactionStock);
         }
         return newStocks;
+    }
+
+    public String formatDate(String date) {
+        if (date.contains("T")) {
+            try {
+                return dfNew.format(df.parse(date));
+            } catch (ParseException e) {
+                return "";
+            }
+        } else {
+            return date;
+        }
+
     }
 }
