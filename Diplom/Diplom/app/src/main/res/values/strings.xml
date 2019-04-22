@@ -13,4 +13,7 @@
     <string name="arrowDown">↓</string>
     <string name="arrowUp">↑</string>
     <string name="no_stocks">Нет купленных акций</string>
+    <string name="use_cached">public, max-stale=300</string>
+    <string name="ignore_cache">no-cache</string>
+    <string name="no_connection">Нет подключения к интернету</string>
 </resources>

@@ -8,6 +8,6 @@ import shanshin.gleb.diplom.responses.InfoResponse;
 public interface AccountApi {
 
     @GET("api/account/info")
-    Call<InfoResponse> getAccountInfo(@Header("Authorization") String accessToken);
+    Call<InfoResponse> getAccountInfo(@Header("Authorization") String accessToken, @Header("Cache-Control") String cacheControl);
 
 }

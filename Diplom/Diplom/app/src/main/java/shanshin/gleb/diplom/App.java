@@ -6,8 +6,10 @@ import android.content.Intent;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.File;
 import java.io.IOException;
 
+import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -57,8 +59,10 @@ public class App extends Application {
         dialogHandler = new BottomDialogHandler();
         mapUtils = new MapStockUtils();
         errorHandler = new ErrorHandler();
+        File httpCacheDirectory = new File(getCacheDir(), "responses");
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(new ExpiredTokenInterceptor())
+                .cache(new Cache(httpCacheDirectory, 10 * 1024 * 1024))
                 .build();
 
         retrofit = new Retrofit.Builder()
@@ -99,7 +103,7 @@ public class App extends Application {
                 AuthSuccessResponse successResponse = response.body();
                 App.getInstance().getDataHandler().saveTokens(successResponse.accessToken, successResponse.refreshToken);
             } else {
-                startActivity(new Intent(this, MainActivity.class));
+                startActivity(new Intent(this, AuthActivity.class));
             }
         } catch (IOException e) {
             e.printStackTrace();

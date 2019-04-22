@@ -26,14 +26,12 @@ import com.ethanhua.skeleton.ViewSkeletonScreen;
 
 
 import java.util.ArrayList;
-import java.util.List;
 
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import shanshin.gleb.diplom.api.AccountApi;
-import shanshin.gleb.diplom.model.Stock;
 import shanshin.gleb.diplom.model.UniversalStock;
 import shanshin.gleb.diplom.responses.InfoResponse;
 
@@ -62,14 +60,14 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
         setContentView(R.layout.activity_stock_case);
         initializeViews();
         setSkeletonLoading();
-        getInfoAboutAccount();
+        getInfoAboutAccount(getString(R.string.use_cached));
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == SearchActivity.REQUEST_CODE && resultCode == SearchActivity.NEED_UPDATE)
-            getInfoAboutAccount();
+            getInfoAboutAccount(getString(R.string.ignore_cache));
     }
 
     private void initializeViews() {
@@ -84,7 +82,7 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getInfoAboutAccount();
+                getInfoAboutAccount(getString(R.string.ignore_cache));
             }
         });
 
@@ -106,10 +104,10 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
         stocksView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
     }
 
-    private void getInfoAboutAccount() {
+    private void getInfoAboutAccount(String headerValue) {
         swipeRefreshLayout.setRefreshing(true);
         AccountApi accountApi = App.getInstance().getRetrofit().create(AccountApi.class);
-        accountApi.getAccountInfo(App.getInstance().getDataHandler().getAccessToken()).enqueue(new Callback<InfoResponse>() {
+        accountApi.getAccountInfo(App.getInstance().getDataHandler().getAccessToken(), headerValue).enqueue(new Callback<InfoResponse>() {
             @Override
             public void onResponse(Call<InfoResponse> call, Response<InfoResponse> response) {
                 try {
@@ -127,6 +125,9 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
 
             @Override
             public void onFailure(Call<InfoResponse> call, Throwable t) {
+                cancelSkeletonLoading();
+                swipeRefreshLayout.setRefreshing(false);
+                App.getInstance().getUtils().showError(getString(R.string.no_connection));
 
             }
         });
@@ -154,11 +155,9 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
         fabView.hide();
         skeletonHeader = Skeleton.bind(cardView)
                 .load(R.layout.header_skeleton)
-                .duration(1200)
                 .show();
         skeletonStocks = Skeleton.bind(stocksView)
                 .load(R.layout.stock_skeleton_item)
-                .duration(1200)
                 .adapter(new StockAdapter())
                 .show();
     }
@@ -174,7 +173,7 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
 
     @Override
     public void requestSuccess() {
-        getInfoAboutAccount();
+        getInfoAboutAccount(getString(R.string.ignore_cache));
     }
 
     public void switchToSearchActivity(int activityCode) {

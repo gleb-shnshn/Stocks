@@ -62,7 +62,6 @@
         android:id="@+id/switchButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="switchView"
         android:padding="15dp"
         android:text=""
         android:textAlignment="center" />
