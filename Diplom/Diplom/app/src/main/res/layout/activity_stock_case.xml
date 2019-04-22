@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:elevation="10dp">
+        app:elevation="@dimen/spacing_medium">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/main.collapsing"
@@ -32,7 +32,7 @@
                     android:layout_height="?android:actionBarSize"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:layout_marginEnd="17dp"
+                    android:layout_marginEnd="@dimen/spacing_big"
                     android:onClick="switchToTransactionHistory"
                     android:src="@drawable/icon_history" />
 
@@ -41,10 +41,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="?android:actionBarSize"
                     android:gravity="center_vertical"
-                    android:padding="15dp"
+                    android:padding="@dimen/spacing_big"
                     android:text=""
                     android:textColor="@color/white"
-                    android:textSize="30sp" />
+                    android:textSize="@dimen/text_size_balance" />
             </RelativeLayout>
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
@@ -65,12 +65,12 @@
                 android:id="@+id/noStocks"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAlignment="center"
                 android:paddingTop="@dimen/spacing_big"
-                android:textSize="@dimen/text_medium"
                 android:scrollbars="none"
-                android:visibility="gone"
-                android:text="@string/no_stocks" />
+                android:text="@string/no_stocks"
+                android:textAlignment="center"
+                android:textSize="@dimen/text_size_medium"
+                android:visibility="gone" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/stocksView"
@@ -87,7 +87,7 @@
         android:id="@+id/main.toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="#00000000"
+        android:background="@color/transparent"
         android:contentInsetStart="0dp"
         android:contentInsetLeft="0dp"
         app:contentInsetLeft="0dp"
@@ -96,45 +96,37 @@
         app:theme="@style/ThemeOverlay.AppCompat.Dark"
         app:title="">
 
-        <androidx.cardview.widget.CardView
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:cardBackgroundColor="#00000000"
-            app:cardCornerRadius="0dp">
+            android:background="@color/transparent">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_alignEnd="@id/name"
+                android:layout_alignParentStart="true"
+                android:background="@color/grey" />
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_alignEnd="@id/name"
-                    android:layout_alignParentStart="true"
-                    android:background="@color/grey" />
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="?android:actionBarSize"
+                android:layout_height="?android:actionBarSize"
+                android:layout_alignParentTop="true"
+                android:padding="@dimen/spacing_medium"
+                android:src="@drawable/white_circle" />
 
-                <ImageView
-                    android:id="@+id/icon"
-                    android:layout_width="?android:actionBarSize"
-                    android:layout_height="?android:actionBarSize"
-                    android:layout_alignParentTop="true"
-                    android:padding="10dp"
-                    android:src="@drawable/white_circle" />
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/spacing_big"
+                android:layout_toEndOf="@+id/icon"
+                android:text=""
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium" />
 
-                <TextView
-                    android:id="@+id/name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="15dp"
-                    android:layout_toEndOf="@+id/icon"
-                    android:text="Gleb Shanshin"
-                    android:textColor="@color/white"
-                    android:textSize="20sp" />
-
-            </RelativeLayout>
-
-
-        </androidx.cardview.widget.CardView>
+        </RelativeLayout>
     </androidx.appcompat.widget.Toolbar>
 
     <TextView
@@ -142,11 +134,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|start"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="70dp"
+        android:layout_marginStart="@dimen/spacing_big"
+        android:layout_marginTop="@dimen/spacing_xxxl"
         android:text=""
         android:textColor="@color/white"
-        android:textSize="30sp"
+        android:textSize="@dimen/text_size_balance"
         app:finalHeight="?actionBarSize"
         app:finalToolbarHeight="?attr/actionBarSize"
         app:finalYPosition="@dimen/spacing_medium"
@@ -157,9 +149,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="@dimen/spacing_medium"
+        android:layout_marginBottom="@dimen/spacing_medium"
         android:clickable="true"
+        android:focusable="true"
         android:onClick="switchToSearchStocks"
         app:backgroundTint="@color/grey"
         app:srcCompat="@drawable/ic_add_white_48dp" />

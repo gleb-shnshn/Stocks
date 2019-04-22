@@ -1,7 +1,5 @@
 package shanshin.gleb.diplom.pagination;
 
-import android.util.Log;
-
 import java.io.IOException;
 
 import androidx.annotation.NonNull;
@@ -20,13 +18,12 @@ import shanshin.gleb.diplom.responses.StocksResponse;
 import shanshin.gleb.diplom.responses.TransactionHistoryResponse;
 
 public class UniversalStockDataSource extends PageKeyedDataSource<Integer, UniversalStock> {
-    private int activityCode = App.getInstance().getActivityCode();
+    private int activityCode = App.getInstance().getDataHandler().getActivityCode();
     public static final int PAGE_SIZE = 25;
-
     private static final int FIRST_PAGE = 0;
 
     private Page getPage(int activityCode, int itemId) throws IOException {
-        String query = App.getInstance().getQuery();
+        String query = App.getInstance().getDataHandler().getQuery();
         if (activityCode == SearchActivity.SEARCH_STOCKS) {
             Response<StocksResponse> response = App.getInstance().getRetrofit().create(StocksApi.class).
                     getStocks(App.getInstance().getDataHandler().getAccessToken(), query, PAGE_SIZE, itemId)

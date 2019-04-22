@@ -12,14 +12,14 @@ import retrofit2.Response;
 import shanshin.gleb.diplom.App;
 import shanshin.gleb.diplom.LoadingButton;
 import shanshin.gleb.diplom.R;
-import shanshin.gleb.diplom.StockContatiner;
+import shanshin.gleb.diplom.StockContainer;
 import shanshin.gleb.diplom.api.TransactionApi;
 import shanshin.gleb.diplom.model.StockAmountAndId;
 import shanshin.gleb.diplom.responses.BuyAndSellResponse;
 
 public class BottomDialogHandler {
 
-    public void initializeDialog(final BottomSheetDialog bottomSheetDialog, final int stockId, final String name, final boolean isBuyOrSell, final StockContatiner context) {
+    public void initializeDialog(final BottomSheetDialog bottomSheetDialog, final int stockId, final String name, final boolean isBuyOrSell, final StockContainer context) {
         TextView stockName = bottomSheetDialog.findViewById(R.id.stock_name);
         final LoadingButton dialogButton = bottomSheetDialog.findViewById(R.id.dialogButton);
         stockName.setText(name);
@@ -30,7 +30,7 @@ public class BottomDialogHandler {
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!App.getInstance().getUtils().checkingCount(countField.getText().toString()))
+                if (App.getInstance().getUtils().isCountNotValid(countField.getText().toString()))
                     return;
                 dialogButton.startLoading();
                 new Thread(new Runnable() {
@@ -53,7 +53,7 @@ public class BottomDialogHandler {
         });
     }
 
-    private void performRequest(int count, int id, final StockContatiner context, final boolean isBuyOrSell, final BottomSheetDialog bottomSheetDialog) throws IOException {
+    private void performRequest(int count, int id, final StockContainer context, final boolean isBuyOrSell, final BottomSheetDialog bottomSheetDialog) throws IOException {
         TransactionApi transactionApi = App.getInstance().getRetrofit().create(TransactionApi.class);
         StockAmountAndId data = new StockAmountAndId(count, id);
         final Response<BuyAndSellResponse> response;

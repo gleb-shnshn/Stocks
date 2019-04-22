@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import shanshin.gleb.diplom.model.UniversalStock;
 
 public class StockAdapter extends PagedListAdapter<UniversalStock, StockAdapter.ViewHolder> {
-    private StockContatiner stockContatiner;
+    private StockContainer stockContainer;
     private LayoutInflater inflater;
     private ArrayList<UniversalStock> stocks;
     private int downColor, upColor, greyColor;
@@ -35,7 +35,7 @@ public class StockAdapter extends PagedListAdapter<UniversalStock, StockAdapter.
     StockAdapter(Context ctx, ArrayList<UniversalStock> stocks, Integer activityCode) {
         super(DIFF_CALLBACK);
         this.stocks = stocks;
-        this.stockContatiner = (StockContatiner) ctx;
+        this.stockContainer = (StockContainer) ctx;
         this.inflater = LayoutInflater.from(ctx);
 
         this.upColor = inflater.getContext().getResources().getColor(R.color.colorPrimary);
@@ -119,13 +119,21 @@ public class StockAdapter extends PagedListAdapter<UniversalStock, StockAdapter.
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    stockContatiner.stockClicked(stock);
+                    stockContainer.onStockClick(stock);
                 }
             });
+            v.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    stockContainer.onStockLongClick(stock);
+                    return true;
+                }
+            });
+
         }
     }
 
-    private static DiffUtil.ItemCallback<UniversalStock> DIFF_CALLBACK =
+    private final static DiffUtil.ItemCallback<UniversalStock> DIFF_CALLBACK =
             new DiffUtil.ItemCallback<UniversalStock>() {
                 @Override
                 public boolean areItemsTheSame(UniversalStock oldStock, UniversalStock newStock) {

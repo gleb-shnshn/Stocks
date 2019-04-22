@@ -3,8 +3,16 @@
     <dimen name="spacing_small">4dp</dimen>
     <dimen name="spacing_medium">8dp</dimen>
     <dimen name="spacing_big">16dp</dimen>
+    <dimen name="spacing_xxl">48dp</dimen>
+    <dimen name="spacing_xxxl">72dp</dimen>
 
-    <dimen name="margin_line">5dp</dimen>
+    <dimen name="negative_spacing_medium">-8dp</dimen>
+    <dimen name="negative_one_spacing">-1dp</dimen>
 
-    <dimen name="text_medium">19sp</dimen>
+    <dimen name="text_size_balance">30sp</dimen>
+    <dimen name="text_size_big">25sp</dimen>
+    <dimen name="text_size_medium">19sp</dimen>
+    <dimen name="text_size_premedium">16sp</dimen>
+    <dimen name="text_size_small">14sp</dimen>
+    <dimen name="text_size_auth">12sp</dimen>
 </resources>

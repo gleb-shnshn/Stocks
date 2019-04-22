@@ -8,12 +8,28 @@
     <string name="transaction_history_title">История транзакций</string>
     <string name="stock_search_title">Акции</string>
     <string name="wrong_code_exception">WrongActivityCodeException(Have you put extra to Intent?)</string>
-    <string name="currency"> ₽</string>
-    <string name="pcs"> шт.</string>
-    <string name="arrowDown">↓</string>
-    <string name="arrowUp">↑</string>
+    <string name="currency">₽</string>
+    <string name="pcs">\u0020шт.</string>
+    <string name="dots">..</string>
+    <string name="arrowDown">↓\u0020</string>
+    <string name="arrowUp">↑\u0020</string>
     <string name="no_stocks">Нет купленных акций</string>
     <string name="use_cached">public, max-stale=300</string>
     <string name="ignore_cache">no-cache</string>
     <string name="no_connection">Нет подключения к интернету</string>
+    <string name="day">День</string>
+    <string name="week">Неделя</string>
+    <string name="month">Месяц</string>
+    <string name="six_months">6 месяцев</string>
+    <string name="year">Год</string>
+    <string name="total">Все время</string>
+    <string name="stock_title">Акция</string>
+    <string name="login">Логин</string>
+    <string name="password">Пароль</string>
+    <string name="blurred_password_hint">********</string>
+    <string name="login_hint">login123</string>
+    <string name="search_hint">Название акции</string>
+    <string name="dialog_hint">Количество</string>
+    <string name="very_long_space">"                           "</string>
+    <string name="long_space">"              "</string>
 </resources>

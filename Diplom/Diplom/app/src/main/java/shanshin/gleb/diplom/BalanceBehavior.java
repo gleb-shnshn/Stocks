@@ -29,7 +29,6 @@ public class BalanceBehavior extends CoordinatorLayout.Behavior<TextView> {
     private float amountOfToolbarToMove;
     private float amountToMoveXPosition;
     private float amountToMoveYPosition;
-    private float currentToolbarHeight;
 
     private float finalToolbarHeight, finalXPosition, finalYPosition, finalWidth;
 
@@ -67,7 +66,7 @@ public class BalanceBehavior extends CoordinatorLayout.Behavior<TextView> {
             return true;
         initProperties(child, dependency);
 
-        currentToolbarHeight = startToolbarHeight + dependency.getY();
+        float currentToolbarHeight = startToolbarHeight + dependency.getY();
 
         currentToolbarHeight = currentToolbarHeight < finalToolbarHeight ? finalToolbarHeight : currentToolbarHeight;
         final float amountAlreadyMoved = startToolbarHeight - currentToolbarHeight;

@@ -20,27 +20,17 @@ import shanshin.gleb.diplom.handlers.BottomDialogHandler;
 import shanshin.gleb.diplom.handlers.ErrorHandler;
 import shanshin.gleb.diplom.handlers.GeneralUtils;
 import shanshin.gleb.diplom.handlers.MapStockUtils;
-import shanshin.gleb.diplom.handlers.SharedPreferencesHandler;
+import shanshin.gleb.diplom.handlers.DataHandler;
 import shanshin.gleb.diplom.model.RefreshToken;
 import shanshin.gleb.diplom.responses.AuthSuccessResponse;
 
 public class App extends Application {
     private static App instance;
     private Retrofit retrofit;
-    private SharedPreferencesHandler sharedPrefsHandler;
+    private DataHandler sharedPrefsHandler;
     private GeneralUtils utils;
     private MapStockUtils mapUtils;
     private ErrorHandler errorHandler;
-    private int activityCode;
-    private String query;
-
-    public int getActivityCode() {
-        return activityCode;
-    }
-
-    public void setActivityCode(int activityCode) {
-        this.activityCode = activityCode;
-    }
 
     public BottomDialogHandler getDialogHandler() {
         return dialogHandler;
@@ -54,7 +44,7 @@ public class App extends Application {
         instance = this;
         String server = getResources().getString(R.string.server_url);
         Gson gson = new GsonBuilder().create();
-        sharedPrefsHandler = new SharedPreferencesHandler();
+        sharedPrefsHandler = new DataHandler();
         utils = new GeneralUtils();
         dialogHandler = new BottomDialogHandler();
         mapUtils = new MapStockUtils();
@@ -110,15 +100,7 @@ public class App extends Application {
         }
     }
 
-    public SharedPreferencesHandler getDataHandler() {
+    public DataHandler getDataHandler() {
         return sharedPrefsHandler;
-    }
-
-    public String getQuery() {
-        return query;
-    }
-
-    public void setQuery(String query) {
-        this.query = query;
     }
 }

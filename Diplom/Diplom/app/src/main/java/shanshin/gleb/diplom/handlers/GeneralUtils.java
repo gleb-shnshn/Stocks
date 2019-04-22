@@ -5,8 +5,6 @@ import com.muddzdev.styleabletoast.StyleableToast;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import shanshin.gleb.diplom.App;
@@ -15,8 +13,8 @@ import shanshin.gleb.diplom.model.UniversalStock;
 
 public class GeneralUtils {
 
-    private DateFormat df = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
-    private DateFormat dfNew = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+    final private DateFormat DATE_FORMAT_PARSER = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
+    final private DateFormat DATE_FORMAT_FORMATTER = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
 
     public void showError(String errorMessage) {
         new StyleableToast
@@ -29,17 +27,17 @@ public class GeneralUtils {
                 .show();
     }
 
-    public boolean checkingCount(String countText) {
+    public boolean isCountNotValid(String countText) {
         if (countText.equals("")) {
             showError("Введите количество акций");
-            return false;
+            return true;
         }
         int requestedCount = Integer.parseInt(countText);
         if (requestedCount < 1) {
             showError("Количество акций должно быть больше нуля");
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     public void showSuccess(String successMessage) {
@@ -53,15 +51,6 @@ public class GeneralUtils {
                 .show();
     }
 
-    public ArrayList<UniversalStock> localQuery(String query, List<UniversalStock> stocks) {
-        ArrayList<UniversalStock> newStocks = new ArrayList<>();
-        for (UniversalStock stock : stocks) {
-            if (stock.nameField.contains(query))
-                newStocks.add(stock);
-        }
-        return newStocks;
-    }
-
     public String formatFloat(int length, float value) {
         return String.format(Locale.ENGLISH, "%." + length + "f", value);
     }
@@ -73,15 +62,10 @@ public class GeneralUtils {
     }
 
     public String formatDate(String date) {
-        if (date.contains("T")) {
-            try {
-                return dfNew.format(df.parse(date));
-            } catch (ParseException e) {
-                return "";
-            }
-        } else {
-            return date;
+        try {
+            return DATE_FORMAT_FORMATTER.format(DATE_FORMAT_PARSER.parse(date));
+        } catch (ParseException e) {
+            return "";
         }
-
     }
 }

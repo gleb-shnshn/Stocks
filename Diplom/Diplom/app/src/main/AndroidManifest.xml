@@ -25,6 +25,10 @@
         <activity
             android:name=".SearchActivity"
             android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".ChartActivity"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

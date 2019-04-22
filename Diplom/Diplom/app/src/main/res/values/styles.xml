@@ -9,6 +9,7 @@
 
     <style name="AppTheme.Toolbar" parent="AppTheme">
         <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:fontFamily">@font/roboto_l</item>
         <item name="android:textColorSecondary">@color/white</item>
     </style>
 

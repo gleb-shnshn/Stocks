@@ -1,7 +1,5 @@
 package shanshin.gleb.diplom;
 
-import android.util.Log;
-
 import java.io.IOException;
 
 import okhttp3.Interceptor;
@@ -12,7 +10,6 @@ public class ExpiredTokenInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Response response = chain.proceed(chain.request());
-        Log.d("tagged", "log");
         if (response.code() == 401 && !App.getInstance().getDataHandler().getAccessToken().equals("")) {
             App.getInstance().updateTokens();
             Request original = chain.request();

@@ -10,7 +10,6 @@ import shanshin.gleb.diplom.model.UniversalStock;
 public class StockViewModel extends ViewModel {
 
     private LiveData<PagedList<UniversalStock>> stockPagedList;
-    private LiveData<PageKeyedDataSource<Integer, UniversalStock>> liveDataSource;
     private UniversalStockDataSourceFactory stockDataSourceFactory;
 
     public UniversalStockDataSourceFactory getDataSourceFactory(){
@@ -21,7 +20,7 @@ public class StockViewModel extends ViewModel {
     }
     public StockViewModel() {
         stockDataSourceFactory = new UniversalStockDataSourceFactory();
-        liveDataSource = stockDataSourceFactory.getItemLiveDataSource();
+        //LiveData<PageKeyedDataSource<Integer, UniversalStock>> liveDataSource = stockDataSourceFactory.getItemLiveDataSource();
 
         PagedList.Config pagedListConfig =
                 (new PagedList.Config.Builder())

@@ -36,7 +36,7 @@ import shanshin.gleb.diplom.model.UniversalStock;
 import shanshin.gleb.diplom.responses.InfoResponse;
 
 
-public class StockCaseActivity extends AppCompatActivity implements StockContatiner {
+public class StockCaseActivity extends AppCompatActivity implements StockContainer {
     private RecyclerView stocksView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerViewSkeletonScreen skeletonStocks;
@@ -150,7 +150,7 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
         fabView.show();
     }
 
-    public void setSkeletonLoading() {
+    private void setSkeletonLoading() {
         toolbar.setVisibility(View.GONE);
         fabView.hide();
         skeletonHeader = Skeleton.bind(cardView)
@@ -167,8 +167,19 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
     }
 
     @Override
-    public void stockClicked(UniversalStock stock) {
+    public void onStockClick(UniversalStock stock) {
         App.getInstance().getDialogHandler().initializeDialog(bottomSheetDialog, stock.id, stock.nameField, false, this);
+    }
+
+    @Override
+    public void onStockLongClick(UniversalStock stock) {
+        Intent intent = new Intent(this, ChartActivity.class);
+        intent.putExtra("stockId", stock.id);
+        intent.putExtra("priceDelta", stock.deltaField);
+        intent.putExtra("price", stock.priceField);
+        intent.putExtra("priceEnd", stock.priceEndField);
+        intent.putExtra("redOrGreen", stock.redOrGreen);
+        startActivity(intent);
     }
 
     @Override
@@ -176,7 +187,7 @@ public class StockCaseActivity extends AppCompatActivity implements StockContati
         getInfoAboutAccount(getString(R.string.ignore_cache));
     }
 
-    public void switchToSearchActivity(int activityCode) {
+    private void switchToSearchActivity(int activityCode) {
         Intent intent = new Intent(this, SearchActivity.class);
         intent.putExtra("activityCode", activityCode);
         startActivityForResult(intent, SearchActivity.REQUEST_CODE);

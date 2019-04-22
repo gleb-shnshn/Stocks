@@ -18,13 +18,13 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import shanshin.gleb.diplom.responses.AuthSuccessResponse;
 
-public class AuthActivity extends AppCompatActivity implements View.OnClickListener{
-    LoadingButton loadingButton;
-    EditText loginField, passwordField;
-    TextView switchButton;
-    boolean isLoginOrRegistration = true;
+public class AuthActivity extends AppCompatActivity implements View.OnClickListener {
+    private LoadingButton loadingButton;
+    private EditText loginField, passwordField;
+    private TextView switchButton;
+    private boolean isLoginOrRegistration = true;
 
-    public void updateContentViewOnUiThread(final int layout, final boolean needInit) {
+    private void updateContentViewOnUiThread(final int layout, final boolean needInit) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -35,7 +35,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    public void initializeViews() {
+    private void initializeViews() {
         loginField = findViewById(R.id.loginInput);
         passwordField = findViewById(R.id.passInput);
         loadingButton = findViewById(R.id.progressButton);
@@ -81,7 +81,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         }).start();
     }
 
-    public void performRequest() {
+    private void performRequest() {
         switchButton.setOnClickListener(null);
         showProgress(true);
         getRequestCall().enqueue(new Callback<AuthSuccessResponse>() {
@@ -139,7 +139,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public LoginAndPassword getDataFromFields() {
+    private LoginAndPassword getDataFromFields() {
         String login = loginField.getText().toString();
         String password = passwordField.getText().toString();
         return new LoginAndPassword(login, password);

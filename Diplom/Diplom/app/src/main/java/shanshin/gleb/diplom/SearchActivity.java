@@ -1,5 +1,6 @@
 package shanshin.gleb.diplom;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -23,7 +24,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import shanshin.gleb.diplom.model.UniversalStock;
 import shanshin.gleb.diplom.pagination.StockViewModel;
 
-public class SearchActivity extends AppCompatActivity implements StockContatiner {
+public class SearchActivity extends AppCompatActivity implements StockContainer {
     static final int NEED_UPDATE = 211;
     static final int REQUEST_CODE = 582;
 
@@ -86,7 +87,7 @@ public class SearchActivity extends AppCompatActivity implements StockContatiner
         titleText = findViewById(R.id.title);
 
         activityCode = getIntent().getIntExtra("activityCode", 0);
-        App.getInstance().setActivityCode(activityCode);
+        App.getInstance().getDataHandler().setActivityCode(activityCode);
         if (activityCode == TRANSACTION_HISTORY) {
             titleText.setText(getString(R.string.transaction_history_title));
         } else if (activityCode == SEARCH_STOCKS) {
@@ -118,17 +119,30 @@ public class SearchActivity extends AppCompatActivity implements StockContatiner
 
     private void updateStockList(String query) {
         lastQuery = query;
-        App.getInstance().setQuery(query);
-        stockViewModel.getDataSourceFactory().updatedQuery();
+        App.getInstance().getDataHandler().setQuery(lastQuery);
+        stockViewModel.getDataSourceFactory().onQueryUpdated();
 
     }
 
     @Override
-    public void stockClicked(UniversalStock stock) {
+    public void onStockClick(UniversalStock stock) {
         if (activityCode == TRANSACTION_HISTORY)
             return;
 
         App.getInstance().getDialogHandler().initializeDialog(bottomSheetDialog, stock.id, stock.nameField, true, this);
+    }
+
+    @Override
+    public void onStockLongClick(UniversalStock stock) {
+        if (activityCode == TRANSACTION_HISTORY)
+            return;
+        Intent intent = new Intent(this, ChartActivity.class);
+        intent.putExtra("stockId", stock.id);
+        intent.putExtra("priceDelta", stock.deltaField);
+        intent.putExtra("price", stock.priceField);
+        intent.putExtra("priceEnd", stock.priceEndField);
+        intent.putExtra("redOrGreen", stock.redOrGreen);
+        startActivity(intent);
     }
 
 

@@ -11,7 +11,7 @@
         android:background="@color/grey"
         android:contentInsetStart="0dp"
         android:contentInsetLeft="0dp"
-        android:elevation="10dp"
+        android:elevation="@dimen/spacing_medium"
         android:layoutDirection="rtl"
         app:contentInsetLeft="0dp"
         app:contentInsetStart="0dp"
@@ -26,9 +26,9 @@
                 android:id="@+id/searchView"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="-1dp"
+                android:layout_marginBottom="@dimen/negative_one_spacing"
                 android:background="@color/transparent"
-                android:queryHint="Название акции"
+                android:queryHint="@string/search_hint"
                 android:theme="@style/AppSearchView" />
 
             <TextView
@@ -36,10 +36,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:padding="10dp"
-                android:text="Акции"
+                android:padding="@dimen/spacing_medium"
+                android:text="@string/stock_search_title"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="@dimen/text_size_medium" />
         </LinearLayout>
     </androidx.appcompat.widget.Toolbar>
 

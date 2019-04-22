@@ -19,12 +19,11 @@ public class UniversalStockDataSourceFactory extends DataSource.Factory {
         return stockDataSource;
     }
 
-    public void updatedQuery(){
-        stockDataSource.invalidate();
-    }
-
-
     public MutableLiveData<PageKeyedDataSource<Integer, UniversalStock>> getItemLiveDataSource() {
         return itemLiveDataSource;
+    }
+
+    public void onQueryUpdated() {
+        stockDataSource.invalidate();
     }
 }
