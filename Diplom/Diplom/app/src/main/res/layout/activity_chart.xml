@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
         android:background="@color/grey"
+        android:layout_marginBottom="@dimen/spacing_big"
         android:elevation="@dimen/spacing_medium"
         android:padding="@dimen/spacing_medium"
         app:contentInsetLeft="0dp"
@@ -24,11 +25,11 @@
         android:id="@+id/stock"
         layout="@layout/stock_item" />
 
-    <com.github.mikephil.charting.charts.LineChart
+    <com.github.mikephil.charting.charts.CandleStickChart
         android:id="@+id/chart"
         android:layout_width="match_parent"
         android:layout_weight="1"
-        android:layout_margin="@dimen/spacing_big"
+        android:layout_marginTop="@dimen/spacing_big"
         android:layout_height="0dp" />
 
     <LinearLayout

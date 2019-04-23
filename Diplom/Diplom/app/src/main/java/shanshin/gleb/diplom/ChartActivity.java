@@ -1,6 +1,7 @@
 package shanshin.gleb.diplom;
 
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,33 +13,33 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import shanshin.gleb.diplom.api.StocksApi;
+import shanshin.gleb.diplom.handlers.GeneralUtils;
 import shanshin.gleb.diplom.model.ChartData;
 import shanshin.gleb.diplom.responses.StockHistoryResponse;
 
 import com.bumptech.glide.Glide;
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.charts.CandleStickChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.components.YAxis.AxisDependency;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.data.CandleData;
+import com.github.mikephil.charting.data.CandleDataSet;
+import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 public class ChartActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private LineChart chart;
+    private CandleStickChart chart;
+    private List<ChartData> chartDataList = new ArrayList<>();
+    private CandleDataSet dataSet;
     private int stockId;
     private String priceDelta, price, priceEnd;
     private boolean redOrGreen;
@@ -50,59 +51,71 @@ public class ChartActivity extends AppCompatActivity implements View.OnClickList
 
         initializeProperties();
         initializeOnClickListeners();
+        initializeChartProperties();
 
         updateChart("day");
+    }
 
+    private void initializeChartProperties() {
         chart = findViewById(R.id.chart);
-        // no description text
+        chart.getLegend().setEnabled(false);
         chart.getDescription().setEnabled(false);
-
-        // enable touch gestures
-        chart.setTouchEnabled(true);
-
-        chart.setDragDecelerationFrictionCoef(0.9f);
-
-        // enable scaling and dragging
-        chart.setDragEnabled(true);
-        chart.setScaleEnabled(true);
-        chart.setDrawGridBackground(false);
-        chart.setHighlightPerDragEnabled(true);
-
-        // set an alternative background color
-        chart.setBackgroundColor(getResources().getColor(R.color.light_grey));
-        chart.setViewPortOffsets(0f, 0f, 0f, 0f);
-
-        Legend l = chart.getLegend();
-        l.setEnabled(false);
+        chart.setHighlightPerDragEnabled(false);
+        chart.setBorderColor(getResources().getColor(R.color.light_grey));
+        chart.requestDisallowInterceptTouchEvent(true);
 
         XAxis xAxis = chart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.TOP_INSIDE);
         xAxis.setTextSize(10f);
-        xAxis.setTextColor(Color.WHITE);
         xAxis.setDrawAxisLine(false);
         xAxis.setDrawGridLines(false);
+        xAxis.setLabelCount(2);
         xAxis.setTextColor(getResources().getColor(R.color.grey));
         xAxis.setCenterAxisLabels(true);
+        xAxis.setDrawGridLines(false);
+        xAxis.setDrawLabels(true);
+        xAxis.setGranularity(1f);
+        xAxis.setGranularityEnabled(true);
+        xAxis.setAvoidFirstLastClipping(true);
         xAxis.setValueFormatter(new ValueFormatter() {
 
-            private final SimpleDateFormat mFormat = new SimpleDateFormat("dd MMM HH:mm", Locale.ENGLISH);
+            private final SimpleDateFormat FORMATTER = new SimpleDateFormat("dd MMM HH:mm", Locale.ENGLISH);
 
             @Override
             public String getFormattedValue(float value) {
-                return mFormat.format(new Date((long) value));
+                try {
+                    return FORMATTER.format(GeneralUtils.DATE_FORMAT_PARSER.parse(chartDataList.get((int) value).date).getTime());
+                } catch (Exception e) {
+                    return "";
+                }
             }
         });
 
+
         YAxis leftAxis = chart.getAxisLeft();
-        leftAxis.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
-        leftAxis.setTextColor(getResources().getColor(R.color.grey));
         leftAxis.setDrawGridLines(false);
-        leftAxis.setGranularityEnabled(true);
-        leftAxis.setYOffset(-9f);
+        leftAxis.setSpaceTop(10);
+        leftAxis.setMaxWidth(50);
         leftAxis.setTextColor(getResources().getColor(R.color.grey));
 
         YAxis rightAxis = chart.getAxisRight();
-        rightAxis.setEnabled(false);
+        rightAxis.setDrawGridLines(false);
+        rightAxis.setSpaceTop(10);
+        rightAxis.setMaxWidth(50);
+        leftAxis.setTextColor(getResources().getColor(R.color.grey));
+
+        dataSet = new CandleDataSet(new ArrayList<CandleEntry>(), "");
+        dataSet.setColor(getResources().getColor(R.color.grey));
+        dataSet.setAxisDependency(AxisDependency.LEFT);
+        dataSet.setDrawValues(false);
+        dataSet.setShadowColor(getResources().getColor(R.color.grey));
+        dataSet.setShadowWidth(0.8f);
+        dataSet.setDecreasingColor(getResources().getColor(R.color.errorColor));
+        dataSet.setDecreasingPaintStyle(Paint.Style.FILL);
+        dataSet.setIncreasingColor(getResources().getColor(R.color.colorPrimary));
+        dataSet.setIncreasingPaintStyle(Paint.Style.FILL);
+        dataSet.setNeutralColor(Color.LTGRAY);
+
     }
 
     private void initializeOnClickListeners() {
@@ -126,11 +139,7 @@ public class ChartActivity extends AppCompatActivity implements View.OnClickList
         App.getInstance().getRetrofit().create(StocksApi.class).getStockHistory(stockId, range).enqueue(new Callback<StockHistoryResponse>() {
             @Override
             public void onResponse(Call<StockHistoryResponse> call, Response<StockHistoryResponse> response) {
-                try {
-                    inititalizeStock(response);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+                initializeStock(response);
             }
 
             @Override
@@ -140,7 +149,7 @@ public class ChartActivity extends AppCompatActivity implements View.OnClickList
         });
     }
 
-    private void inititalizeStock(Response<StockHistoryResponse> response) throws ParseException {
+    private void initializeStock(Response<StockHistoryResponse> response) {
         View stock = findViewById(R.id.stock);
         TextView stockName = stock.findViewById(R.id.stock_name);
         TextView stockCode = stock.findViewById(R.id.stock_count);
@@ -171,52 +180,50 @@ public class ChartActivity extends AppCompatActivity implements View.OnClickList
                 .centerCrop()
                 .placeholder(R.drawable.white_circle)
                 .into((ImageView) findViewById(R.id.icon));
-
         setData(stockResponse.history);
     }
 
-    private void setData(List<ChartData> chartDataList) throws ParseException {
-
-        ArrayList<Entry> values = new ArrayList<>();
-        DateFormat df = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
+    private void setData(List<ChartData> chartDataList) {
+        this.chartDataList = chartDataList;
+        sortChartDataList(chartDataList);
+        ArrayList<CandleEntry> values = new ArrayList<>();
         float minPrice = Float.MAX_VALUE, maxPrice = Float.MIN_VALUE;
-        for (ChartData chartData : chartDataList) {
+        for (int i = 1; i < chartDataList.size(); i++) {
+            ChartData chartData = chartDataList.get(i);
             if (chartData.price < minPrice)
                 minPrice = chartData.price;
             if (chartData.price > maxPrice)
                 maxPrice = chartData.price;
-            values.add(new Entry(df.parse(chartData.date).getTime(), chartData.price));
+            values.add(new CandleEntry(i, chartDataList.get(i - 1).price * 1.01f, chartData.price * 0.99f, chartDataList.get(i - 1).price, chartData.price));
         }
-        Collections.sort(values, new Comparator<Entry>() {
-            @Override
-            public int compare(Entry entry, Entry entry2) {
-                if (entry.getX() > entry2.getX()) {
-                    return 1;
-                } else if (entry.getX() == entry2.getX())
-                    return 0;
-                return -1;
-            }
-        });
-        LineDataSet set1 = new LineDataSet(values, "DataSet 1");
-        set1.setAxisDependency(AxisDependency.LEFT);
-        set1.setColor(getResources().getColor(R.color.grey));
-        set1.setValueTextColor(getResources().getColor(R.color.grey));
-        set1.setLineWidth(3f);
-        set1.setDrawCircles(true);
-        set1.setCircleColor(getResources().getColor(R.color.grey));
-        set1.setDrawValues(false);
-        set1.setFillAlpha(65);
-        set1.setDrawCircleHole(false);
 
-        LineData data = new LineData(set1);
-        data.setValueTextColor(Color.WHITE);
-        data.setValueTextSize(9f);
+        dataSet.setValues(values);
 
-        chart.setData(data);
         YAxis leftAxis = chart.getAxisLeft();
         leftAxis.setAxisMinimum(minPrice * 0.95f);
         leftAxis.setAxisMaximum(maxPrice * 1.05f);
+
+        CandleData data = new CandleData(dataSet);
+        chart.setData(data);
         chart.invalidate();
+    }
+
+    private void sortChartDataList(List<ChartData> chartDataList) {
+        Collections.sort(chartDataList, new Comparator<ChartData>() {
+            @Override
+            public int compare(ChartData data1, ChartData data2) {
+                try {
+                    long time1 = GeneralUtils.DATE_FORMAT_PARSER.parse(data1.date).getTime(), time2 = GeneralUtils.DATE_FORMAT_PARSER.parse(data2.date).getTime();
+                    if (time1 > time2) {
+                        return 1;
+                    } else if (time1 == time2)
+                        return 0;
+                    return -1;
+                } catch (ParseException e) {
+                    return 0;
+                }
+            }
+        });
     }
 
 
@@ -243,7 +250,6 @@ public class ChartActivity extends AppCompatActivity implements View.OnClickList
                 range = "total";
                 break;
         }
-        Log.d("tagged", range);
         updateChart(range);
     }
 }

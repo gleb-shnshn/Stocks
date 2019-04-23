@@ -13,8 +13,9 @@ import shanshin.gleb.diplom.model.UniversalStock;
 
 public class GeneralUtils {
 
-    final private DateFormat DATE_FORMAT_PARSER = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
-    final private DateFormat DATE_FORMAT_FORMATTER = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+    final public static DateFormat DATE_FORMAT_PARSER = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
+    final private
+    DateFormat DATE_FORMAT_FORMATTER = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
 
     public void showError(String errorMessage) {
         new StyleableToast
