@@ -83,7 +83,7 @@ public class App extends Application {
         return retrofit;
     }
 
-    public void updateTokens() {
+    public void refreshToken() {
         AuthApi authApi = getInstance().getRetrofit().create(AuthApi.class);
         Call<AuthSuccessResponse> call = authApi.refreshToken(App.getInstance().getDataHandler().getAccessToken(), new RefreshToken(App.getInstance().getDataHandler().getRefreshToken()));
         try {

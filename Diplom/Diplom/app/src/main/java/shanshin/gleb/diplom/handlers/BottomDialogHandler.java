@@ -69,7 +69,7 @@ public class BottomDialogHandler {
                     App.getInstance().getErrorHandler().handleFieldError(response.errorBody());
                 } else {
                     App.getInstance().getUtils().showSuccess(App.getInstance().getString(isBuyOrSell ? R.string.success_buy : R.string.success_sell));
-                    context.requestSuccess();
+                    context.onRequestSuccess();
                     bottomSheetDialog.hide();
                 }
             }

@@ -46,6 +46,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 performRequest();
             }
         });
+        switchButton.setOnClickListener(this);
         updateTextOnButtons();
     }
 
@@ -55,8 +56,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void updateTextOnButtons() {
-        switchButton.setText(isLoginOrRegistration ? "Создать аккаунт" : "Уже зарегистрированы?");
-        loadingButton.setText(isLoginOrRegistration ? "Войти" : "Создать аккаунт");
+        switchButton.setText(isLoginOrRegistration ? getString(R.string.create_an_account) : getString(R.string.already_registered));
+        loadingButton.setText(isLoginOrRegistration ? getString(R.string.sign_in) : getString(R.string.create_an_account));
     }
 
     @Override
@@ -82,7 +83,6 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void performRequest() {
-        switchButton.setOnClickListener(null);
         showProgress(true);
         getRequestCall().enqueue(new Callback<AuthSuccessResponse>() {
             @Override
@@ -90,7 +90,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 try {
                     showProgress(false);
                     if (response.code() == 401) {
-                        App.getInstance().getUtils().showError("Неверный логин или пароль");
+                        App.getInstance().getUtils().showError(getString(R.string.wrong_auth_data));
                     } else if (!response.isSuccessful() && response.errorBody() != null) {
                         App.getInstance().getErrorHandler().handleFieldError(response.errorBody());
                     } else {
@@ -114,10 +114,10 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
     private void showProgress(boolean visible) {
         if (visible) {
-            loadingButton.startLoading(); //превращение в loader
+            loadingButton.startLoading();
             switchButton.setOnClickListener(null);
         } else {
-            loadingButton.stopLoading(); //превращение в кнопку
+            loadingButton.stopLoading();
             switchButton.setOnClickListener(this);
         }
 

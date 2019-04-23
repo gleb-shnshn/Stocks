@@ -32,4 +32,11 @@
     <string name="dialog_hint">Количество</string>
     <string name="very_long_space">"                           "</string>
     <string name="long_space">"              "</string>
+    <string name="sell_internet_response">sell</string>
+    <string name="dot_divider">\u0020•\u0020</string>
+    <string name="percent_formatter">(%s%%)</string>
+    <string name="create_an_account">Создать аккаунт</string>
+    <string name="already_registered">Уже зарегистрированы?</string>
+    <string name="sign_in">Войти</string>
+    <string name="wrong_auth_data">Неверный логин или пароль</string>
 </resources>

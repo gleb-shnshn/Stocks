@@ -46,6 +46,12 @@ public class SearchActivity extends AppCompatActivity implements StockContainer 
         initializeViews();
     }
 
+    @Override
+    protected void onStop() {
+        App.getInstance().getDataHandler().setQuery("");
+        super.onStop();
+    }
+
     private void initializeViews() {
         SearchView searchView = findViewById(R.id.searchView);
         searchView.setMaxWidth(Integer.MAX_VALUE);
@@ -147,7 +153,7 @@ public class SearchActivity extends AppCompatActivity implements StockContainer 
 
 
     @Override
-    public void requestSuccess() {
+    public void onRequestSuccess() {
         setResult(NEED_UPDATE);
         updateStockList(lastQuery);
 

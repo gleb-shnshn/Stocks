@@ -7,5 +7,5 @@ public interface StockContainer {
     void onStockLongClick(UniversalStock stock);
 
     void runOnUiThread(Runnable runnable);
-    void requestSuccess();
+    void onRequestSuccess();
 }

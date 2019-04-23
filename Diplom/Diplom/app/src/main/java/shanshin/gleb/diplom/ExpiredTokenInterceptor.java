@@ -11,7 +11,7 @@ public class ExpiredTokenInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Response response = chain.proceed(chain.request());
         if (response.code() == 401 && !App.getInstance().getDataHandler().getAccessToken().equals("")) {
-            App.getInstance().updateTokens();
+            App.getInstance().refreshToken();
             Request original = chain.request();
             Request newRequest = original.newBuilder().header("Authorization", App.getInstance().getDataHandler().getAccessToken()).build();
             return chain.proceed(newRequest);

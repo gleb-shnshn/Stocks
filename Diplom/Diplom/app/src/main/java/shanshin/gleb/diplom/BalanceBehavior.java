@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 
 import com.google.android.material.appbar.AppBarLayout;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
@@ -42,26 +43,26 @@ public class BalanceBehavior extends CoordinatorLayout.Behavior<TextView> {
             finalYPosition = a.getDimension(R.styleable.BalanceBehavior_finalYPosition, 0);
             finalWidth = a.getDimension(R.styleable.BalanceBehavior_finalWidth, 0);
             finalToolbarHeight = a.getDimension(R.styleable.BalanceBehavior_finalToolbarHeight, 0);
-            grey = App.getInstance().getDrawable(R.color.grey);
-            transparent = App.getInstance().getDrawable(R.color.transparent);
             a.recycle();
         }
+        grey = App.getInstance().getDrawable(R.color.grey);
+        transparent = App.getInstance().getDrawable(R.color.transparent);
     }
 
     @Override
     public boolean layoutDependsOn(
-            final CoordinatorLayout parent,
-            final TextView child,
-            final View dependency) {
+            @NonNull final CoordinatorLayout parent,
+            @NonNull final TextView child,
+            @NonNull final View dependency) {
         return dependency instanceof AppBarLayout;
     }
 
 
     @Override
     public boolean onDependentViewChanged(
-            final CoordinatorLayout parent,
-            final TextView child,
-            final View dependency) {
+            @NonNull final CoordinatorLayout parent,
+            @NonNull final TextView child,
+            @NonNull final View dependency) {
         if (child.getWidth() == 0)
             return true;
         initProperties(child, dependency);

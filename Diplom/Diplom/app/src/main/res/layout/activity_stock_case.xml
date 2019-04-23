@@ -139,7 +139,6 @@
         android:text=""
         android:textColor="@color/white"
         android:textSize="@dimen/text_size_balance"
-        app:finalHeight="?actionBarSize"
         app:finalToolbarHeight="?attr/actionBarSize"
         app:finalYPosition="@dimen/spacing_medium"
         app:layout_behavior=".BalanceBehavior" />

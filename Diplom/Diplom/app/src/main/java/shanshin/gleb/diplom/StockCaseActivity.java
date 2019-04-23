@@ -37,7 +37,7 @@ import shanshin.gleb.diplom.responses.InfoResponse;
 
 
 public class StockCaseActivity extends AppCompatActivity implements StockContainer {
-    private RecyclerView stocksView;
+    private RecyclerView stocksRecyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerViewSkeletonScreen skeletonStocks;
     private ViewSkeletonScreen skeletonHeader;
@@ -48,6 +48,7 @@ public class StockCaseActivity extends AppCompatActivity implements StockContain
     private RelativeLayout cardView;
     private StockAdapter stockAdapter;
     private BottomSheetDialog bottomSheetDialog;
+    private boolean isIntentCreated;
 
 
     public Toolbar getToolbar() {
@@ -61,6 +62,12 @@ public class StockCaseActivity extends AppCompatActivity implements StockContain
         initializeViews();
         setSkeletonLoading();
         getInfoAboutAccount(getString(R.string.use_cached));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isIntentCreated = false;
     }
 
     @Override
@@ -90,9 +97,9 @@ public class StockCaseActivity extends AppCompatActivity implements StockContain
         View sheetView = getLayoutInflater().inflate(R.layout.bottom_dialog_layout, null);
         bottomSheetDialog.setContentView(sheetView);
 
-        stocksView = findViewById(R.id.stocksView);
-        stocksView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-        stocksView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        stocksRecyclerView = findViewById(R.id.stocksView);
+        stocksRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        stocksRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -101,7 +108,7 @@ public class StockCaseActivity extends AppCompatActivity implements StockContain
             }
         });
         stockAdapter = new StockAdapter(this, new ArrayList<UniversalStock>(), null);
-        stocksView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        stocksRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
     }
 
     private void getInfoAboutAccount(String headerValue) {
@@ -136,10 +143,10 @@ public class StockCaseActivity extends AppCompatActivity implements StockContain
     private void fillActivityView(InfoResponse infoResponse) {
         nameView.setText(infoResponse.name);
         balanceView.setText(App.getInstance().getUtils().formatFloat(2, infoResponse.balance) + getString(R.string.currency));
-        stocksView.setAdapter(stockAdapter);
+        stocksRecyclerView.setAdapter(stockAdapter);
         stockAdapter.setStocks(App.getInstance().getMapUtils().mapStocksToUniversalStocks(infoResponse.stocks, null));
         noStocks.setVisibility(stockAdapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
-        stocksView.setLayoutFrozen(stockAdapter.getItemCount() < 7);
+        stocksRecyclerView.setLayoutFrozen(stockAdapter.getItemCount() < 7);
     }
 
     private void cancelSkeletonLoading() {
@@ -156,7 +163,7 @@ public class StockCaseActivity extends AppCompatActivity implements StockContain
         skeletonHeader = Skeleton.bind(cardView)
                 .load(R.layout.header_skeleton)
                 .show();
-        skeletonStocks = Skeleton.bind(stocksView)
+        skeletonStocks = Skeleton.bind(stocksRecyclerView)
                 .load(R.layout.stock_skeleton_item)
                 .adapter(new StockAdapter())
                 .show();
@@ -183,14 +190,17 @@ public class StockCaseActivity extends AppCompatActivity implements StockContain
     }
 
     @Override
-    public void requestSuccess() {
+    public void onRequestSuccess() {
         getInfoAboutAccount(getString(R.string.ignore_cache));
     }
 
     private void switchToSearchActivity(int activityCode) {
+        if (isIntentCreated)
+            return;
         Intent intent = new Intent(this, SearchActivity.class);
         intent.putExtra("activityCode", activityCode);
         startActivityForResult(intent, SearchActivity.REQUEST_CODE);
+        isIntentCreated = true;
     }
 
     public void switchToTransactionHistory(View view) {
