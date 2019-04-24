@@ -4,17 +4,19 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.paging.PagedListAdapter;
 
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou;
 
 import java.util.ArrayList;
 
@@ -51,7 +53,7 @@ public class StockAdapter extends PagedListAdapter<UniversalStock, StockAdapter.
     }
 
     @Override
-    public StockAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         final View view = this.inflater.inflate(R.layout.stock_item, viewGroup, false);
         return new StockAdapter.ViewHolder(view);
     }
@@ -60,13 +62,12 @@ public class StockAdapter extends PagedListAdapter<UniversalStock, StockAdapter.
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         UniversalStock stock = activityCode == null ? stocks.get(i) : getItem(i);
         viewHolder.stock = stock;
-
-        Glide
-                .with(inflater.getContext())
-                .load(App.getInstance().getString(R.string.server_url) + stock.iconUrl)
-                .centerCrop()
-                .placeholder(R.drawable.white_circle)
-                .into(viewHolder.icon);
+        Uri iconUri = Uri.parse(App.getInstance().getString(R.string.server_url) + stock.iconUrl);
+        GlideToVectorYou
+                .init()
+                .with((AppCompatActivity) inflater.getContext())
+                .setPlaceHolder(R.drawable.white_circle, R.drawable.white_circle)
+                .load(iconUri, viewHolder.icon);
 
         if (stock.nameField.length() > 10) {
             viewHolder.name.setText(stock.nameField.substring(0, 9) + "..");

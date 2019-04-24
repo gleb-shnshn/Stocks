@@ -1,20 +1,26 @@
 package shanshin.gleb.diplom;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -45,6 +51,7 @@ public class StockCaseActivity extends AppCompatActivity implements StockContain
     private FloatingActionButton fabView;
     private Toolbar toolbar;
     private TextView noStocks;
+    private ImageView icon;
     private RelativeLayout cardView;
     private StockAdapter stockAdapter;
     private BottomSheetDialog bottomSheetDialog;
@@ -81,10 +88,10 @@ public class StockCaseActivity extends AppCompatActivity implements StockContain
         cardView = findViewById(R.id.card);
         nameView = findViewById(R.id.name);
         noStocks = findViewById(R.id.noStocks);
-        toolbar = findViewById(R.id.main_toolbar);
+        toolbar = findViewById(R.id.toolbar);
+        icon = findViewById(R.id.icon);
         balanceView = findViewById(R.id.balance);
         fabView = findViewById(R.id.addFloatingButton);
-
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -141,12 +148,19 @@ public class StockCaseActivity extends AppCompatActivity implements StockContain
     }
 
     private void fillActivityView(InfoResponse infoResponse) {
-        nameView.setText(infoResponse.name);
-        balanceView.setText(App.getInstance().getUtils().formatFloat(2, infoResponse.balance) + getString(R.string.currency));
+        nameView.setText(infoResponse.name + infoResponse.surname);
+        GlideToVectorYou.justLoadImage(this, Uri.parse(getString(R.string.server_url) + infoResponse.icon), icon);
+        balanceView.setText(App.getInstance().getUtils().formatFloat(2, infoResponse.balance) + getString(R.string.currency)+" ");
         stocksRecyclerView.setAdapter(stockAdapter);
         stockAdapter.setStocks(App.getInstance().getMapUtils().mapStocksToUniversalStocks(infoResponse.stocks, null));
         noStocks.setVisibility(stockAdapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
-        stocksRecyclerView.setLayoutFrozen(stockAdapter.getItemCount() < 7);
+        setExpandingAndScrollingEnabled(stockAdapter.getItemCount()<7);
+    }
+
+    private void setExpandingAndScrollingEnabled(boolean enabled) {
+        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) findViewById(R.id.appbarlayout).getLayoutParams();
+        ((AppBarLayoutBehavior)layoutParams.getBehavior()).setScrollBehavior(!enabled);
+
     }
 
     private void cancelSkeletonLoading() {

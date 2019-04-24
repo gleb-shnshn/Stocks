@@ -14,8 +14,7 @@ import shanshin.gleb.diplom.model.UniversalStock;
 public class GeneralUtils {
 
     final public static DateFormat DATE_FORMAT_PARSER = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
-    final private
-    DateFormat DATE_FORMAT_FORMATTER = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+    final private DateFormat DATE_FORMAT_FORMATTER = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
 
     public void showError(String errorMessage) {
         new StyleableToast
@@ -30,12 +29,19 @@ public class GeneralUtils {
 
     public boolean isCountNotValid(String countText) {
         if (countText.equals("")) {
-            showError("Введите количество акций");
+            showError(App.getInstance().getString(R.string.stock_count_empty));
             return true;
         }
-        int requestedCount = Integer.parseInt(countText);
+        int requestedCount;
+        try {
+             requestedCount = Integer.parseInt(countText);
+        } catch (Exception e) {
+            showError(App.getInstance().getString(R.string.too_long_number));            
+             return true;
+        }
         if (requestedCount < 1) {
-            showError("Количество акций должно быть больше нуля");
+
+            showError(App.getInstance().getString(R.string.stock_count_not_null));
             return true;
         }
         return false;

@@ -2,10 +2,14 @@ package shanshin.gleb.diplom;
 
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +30,7 @@ import com.github.mikephil.charting.data.CandleData;
 import com.github.mikephil.charting.data.CandleDataSet;
 import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,13 +41,14 @@ import java.util.List;
 import java.util.Locale;
 
 public class ChartActivity extends AppCompatActivity implements View.OnClickListener {
-
+    private ProgressBar progressBar;
     private CandleStickChart chart;
     private List<ChartData> chartDataList = new ArrayList<>();
     private CandleDataSet dataSet;
     private int stockId;
     private String priceDelta, price, priceEnd;
     private boolean redOrGreen;
+    private RadioButton currentChecked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +131,15 @@ public class ChartActivity extends AppCompatActivity implements View.OnClickList
         findViewById(R.id.six_months).setOnClickListener(this);
         findViewById(R.id.year).setOnClickListener(this);
         findViewById(R.id.total).setOnClickListener(this);
+
+        progressBar = findViewById(R.id.progress);
+
+        currentChecked = findViewById(R.id.day);
+        currentChecked.setChecked(true);
+    }
+
+    private void setProgressEnabled(boolean enabled) {
+        progressBar.setVisibility(enabled ? View.VISIBLE : View.GONE);
     }
 
     private void initializeProperties() {
@@ -140,6 +155,7 @@ public class ChartActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onResponse(Call<StockHistoryResponse> call, Response<StockHistoryResponse> response) {
                 initializeStock(response);
+                setProgressEnabled(false);
             }
 
             @Override
@@ -174,12 +190,12 @@ public class ChartActivity extends AppCompatActivity implements View.OnClickList
         stockDelta.setTextColor(redOrGreen ? getResources().getColor(R.color.errorColor) :
                 getResources().getColor(R.color.colorPrimary));
 
-        Glide
+        Uri iconUri = Uri.parse(App.getInstance().getString(R.string.server_url) + stockResponse.iconUrl.substring(1));
+        GlideToVectorYou
+                .init()
                 .with(this)
-                .load(App.getInstance().getString(R.string.server_url) + stockResponse.iconUrl.substring(1))
-                .centerCrop()
-                .placeholder(R.drawable.white_circle)
-                .into((ImageView) findViewById(R.id.icon));
+                .setPlaceHolder(R.drawable.white_circle, R.drawable.white_circle)
+                .load(iconUri, (ImageView) findViewById(R.id.icon));
         setData(stockResponse.history);
     }
 
@@ -229,6 +245,10 @@ public class ChartActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View view) {
+        if (view.getId() == currentChecked.getId())
+            return;
+        setProgressEnabled(true);
+        currentChecked.setChecked(false);
         String range = "";
         switch (view.getId()) {
             case R.id.day:
@@ -250,6 +270,7 @@ public class ChartActivity extends AppCompatActivity implements View.OnClickList
                 range = "total";
                 break;
         }
+        currentChecked = findViewById(view.getId());
         updateChart(range);
     }
 }

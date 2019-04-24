@@ -4,13 +4,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+    <ProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/main_spacing"
+        android:id="@+id/progress"
+        />
+
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
-        android:background="@color/grey"
         android:layout_marginBottom="@dimen/spacing_big"
+        android:background="@color/grey"
         android:elevation="@dimen/spacing_medium"
         android:padding="@dimen/spacing_medium"
         app:contentInsetLeft="0dp"
@@ -28,65 +35,66 @@
     <com.github.mikephil.charting.charts.CandleStickChart
         android:id="@+id/chart"
         android:layout_width="match_parent"
-        android:layout_weight="1"
+        android:layout_height="0dp"
         android:layout_marginTop="@dimen/spacing_big"
-        android:layout_height="0dp" />
+        android:layout_weight="1" />
 
-    <LinearLayout
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingTop="@dimen/spacing_big"
-        android:paddingStart="@dimen/spacing_medium"
-        android:paddingEnd="@dimen/spacing_medium">
+        android:padding="@dimen/spacing_big">
 
-        <Button
+        <RadioButton
             android:id="@+id/day"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/day" />
+            android:text="@string/day"
+            android:textSize="@dimen/text_size_premedium" />
 
-        <Button
+        <RadioButton
             android:id="@+id/week"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/week" />
+            android:layout_centerHorizontal="true"
+            android:text="@string/week"
+            android:textSize="@dimen/text_size_premedium" />
 
-        <Button
+        <RadioButton
             android:id="@+id/month"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/month" />
-    </LinearLayout>
+            android:layout_alignStart="@id/total"
+            android:layout_toEndOf="@id/week"
+            android:text="@string/month"
+            android:textSize="@dimen/text_size_premedium" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="@dimen/spacing_medium">
-
-        <Button
+        <RadioButton
             android:id="@+id/six_months"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/six_months" />
+            android:layout_below="@id/day"
+            android:text="@string/six_months"
+            android:textSize="@dimen/text_size_premedium" />
 
-        <Button
+        <RadioButton
             android:id="@+id/year"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/year" />
+            android:layout_below="@id/month"
+            android:layout_alignStart="@id/week"
+            android:text="@string/year"
+            android:textSize="@dimen/text_size_premedium" />
 
-        <Button
+        <RadioButton
             android:id="@+id/total"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/total" />
-    </LinearLayout>
+            android:layout_below="@id/month"
+            android:layout_alignParentEnd="true"
+            android:text="@string/total"
+            android:textSize="@dimen/text_size_premedium" />
+    </RelativeLayout>
+
+
 </LinearLayout>

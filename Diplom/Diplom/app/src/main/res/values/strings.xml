@@ -39,4 +39,11 @@
     <string name="already_registered">Уже зарегистрированы?</string>
     <string name="sign_in">Войти</string>
     <string name="wrong_auth_data">Неверный логин или пароль</string>
+    <string name="name_hint">Иван Иванов</string>
+    <string name="name_and_surname">Имя и фамилия</string>
+    <string name="user_icon">Иконка пользователя</string>
+    <string name="icon_url">public/icons/</string>
+    <string name="too_long_number">Слишком большое число</string>
+    <string name="stock_count_not_null">Количество акций должно быть больше нуля</string>
+    <string name="stock_count_empty">Введите количество акций</string>
 </resources>

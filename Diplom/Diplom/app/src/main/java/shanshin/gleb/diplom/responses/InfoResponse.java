@@ -11,6 +11,12 @@ public class InfoResponse {
     @SerializedName("name")
     public String name;
 
+    @SerializedName("surname")
+    public String surname;
+
+    @SerializedName("icon")
+    public String icon;
+
     @SerializedName("balance")
     public float balance;
 

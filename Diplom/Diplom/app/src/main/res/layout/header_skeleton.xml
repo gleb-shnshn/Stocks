@@ -19,9 +19,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/icon"
         android:gravity="center_vertical"
-        android:padding="15dp"
+        android:padding="@dimen/spacing_big"
         android:text=""
         android:textColor="@color/white"
-        android:textSize="30sp" />
+        android:textSize="@dimen/text_size_balance" />
 
 </RelativeLayout>

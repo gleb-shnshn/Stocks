@@ -9,7 +9,7 @@ import shanshin.gleb.diplom.model.UniversalStock;
 
 public class StockViewModel extends ViewModel {
 
-    private LiveData<PagedList<UniversalStock>> stockPagedList;
+    private LiveData stockPagedList;
     private UniversalStockDataSourceFactory stockDataSourceFactory;
 
     public UniversalStockDataSourceFactory getDataSourceFactory(){
@@ -27,7 +27,7 @@ public class StockViewModel extends ViewModel {
                         .setEnablePlaceholders(false)
                         .setPageSize(UniversalStockDataSource.PAGE_SIZE).build();
 
-        stockPagedList = (new LivePagedListBuilder(stockDataSourceFactory, pagedListConfig))
+        stockPagedList = new LivePagedListBuilder(stockDataSourceFactory, pagedListConfig)
                 .build();
 
     }

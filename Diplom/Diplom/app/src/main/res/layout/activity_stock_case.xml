@@ -7,14 +7,15 @@
     tools:context=".StockCaseActivity">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/main.appbar"
+        android:id="@+id/appbarlayout"
         android:layout_width="match_parent"
+        app:layout_behavior=".AppBarLayoutBehavior"
         android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:elevation="@dimen/spacing_medium">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:id="@+id/main.collapsing"
+            android:id="@+id/collapsinglayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
@@ -84,7 +85,7 @@
 
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/main.toolbar"
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/transparent"
@@ -92,7 +93,7 @@
         android:contentInsetLeft="0dp"
         app:contentInsetLeft="0dp"
         app:contentInsetStart="0dp"
-        app:layout_anchor="@id/main.collapsing"
+        app:layout_anchor="@id/collapsinglayout"
         app:theme="@style/ThemeOverlay.AppCompat.Dark"
         app:title="">
 

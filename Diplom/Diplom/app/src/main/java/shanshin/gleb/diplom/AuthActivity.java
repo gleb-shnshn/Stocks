@@ -2,27 +2,37 @@ package shanshin.gleb.diplom;
 
 import android.content.Intent;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import shanshin.gleb.diplom.api.AuthApi;
 import shanshin.gleb.diplom.model.LoginAndPassword;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import shanshin.gleb.diplom.model.RegistrationData;
 import shanshin.gleb.diplom.responses.AuthSuccessResponse;
+import shanshin.gleb.diplom.responses.IconResponse;
 
 public class AuthActivity extends AppCompatActivity implements View.OnClickListener {
     private LoadingButton loadingButton;
-    private EditText loginField, passwordField;
+    private EditText loginField, passwordField, nameField;
+    private TextView iconLabel, nameLabel;
+    private RecyclerView iconList;
     private TextView switchButton;
     private boolean isLoginOrRegistration = true;
+    private ImageView mainIcon, appLabel;
+    private String iconUrl;
 
     private void updateContentViewOnUiThread(final int layout, final boolean needInit) {
         runOnUiThread(new Runnable() {
@@ -33,6 +43,18 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                     initializeViews();
             }
         });
+
+    }
+
+    private void initializeRecycler(Response<IconResponse> response) {
+        IconAdapter iconAdapter = new IconAdapter(response.body().iconUrls, this);
+        iconList.setAdapter(iconAdapter);
+        iconList.setLayoutManager(new LinearLayoutManager(App.getInstance(), RecyclerView.HORIZONTAL, false));
+    }
+
+    public void setMainIcon(Drawable drawable, String iconUrl) {
+        this.iconUrl = iconUrl;
+        mainIcon.setImageDrawable(drawable);
     }
 
     private void initializeViews() {
@@ -40,6 +62,22 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         passwordField = findViewById(R.id.passInput);
         loadingButton = findViewById(R.id.progressButton);
         switchButton = findViewById(R.id.switchButton);
+        iconList = findViewById(R.id.iconView);
+        App.getInstance().getRetrofit().create(AuthApi.class).getListOfIcons().enqueue(new Callback<IconResponse>() {
+            @Override
+            public void onResponse(Call<IconResponse> call, Response<IconResponse> response) {
+                initializeRecycler(response);
+            }
+
+            @Override
+            public void onFailure(Call<IconResponse> call, Throwable t) {
+            }
+        });
+        nameLabel = findViewById(R.id.nameLabel);
+        iconLabel = findViewById(R.id.iconLabel);
+        nameField = findViewById(R.id.nameInput);
+        mainIcon = findViewById(R.id.mainIcon);
+        appLabel = findViewById(R.id.appLabel);
         loadingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -58,6 +96,12 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     private void updateTextOnButtons() {
         switchButton.setText(isLoginOrRegistration ? getString(R.string.create_an_account) : getString(R.string.already_registered));
         loadingButton.setText(isLoginOrRegistration ? getString(R.string.sign_in) : getString(R.string.create_an_account));
+        iconList.setVisibility(isLoginOrRegistration ? View.GONE : View.VISIBLE);
+        nameLabel.setVisibility(isLoginOrRegistration ? View.GONE : View.VISIBLE);
+        iconLabel.setVisibility(isLoginOrRegistration ? View.GONE : View.VISIBLE);
+        nameField.setVisibility(isLoginOrRegistration ? View.GONE : View.VISIBLE);
+        mainIcon.setVisibility(isLoginOrRegistration ? View.GONE : View.VISIBLE);
+        appLabel.setVisibility(isLoginOrRegistration ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -131,18 +175,30 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
     private Call<AuthSuccessResponse> getRequestCall() {
         AuthApi authApi = App.getInstance().getRetrofit().create(AuthApi.class);
-        LoginAndPassword data = getDataFromFields();
+
         if (isLoginOrRegistration) {
+            LoginAndPassword data = getLoginDataFromFields();
             return authApi.loginUser(data);
         } else {
+            RegistrationData data = getRegDataFromFields();
             return authApi.registerUser(data);
         }
     }
 
-    private LoginAndPassword getDataFromFields() {
+    private LoginAndPassword getLoginDataFromFields() {
         String login = loginField.getText().toString();
         String password = passwordField.getText().toString();
         return new LoginAndPassword(login, password);
+    }
+
+    private RegistrationData getRegDataFromFields() {
+        String login = loginField.getText().toString();
+        String password = passwordField.getText().toString();
+        String icon = getString(R.string.icon_url) + iconUrl;
+        String email = "stub@stub.com";
+        String nameAndSurname = nameField.getText().toString();
+
+        return new RegistrationData(login, password, icon, email, nameAndSurname.substring(0, 2), nameAndSurname.substring(2));
     }
 
     @Override

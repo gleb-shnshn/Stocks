@@ -9,16 +9,58 @@
     android:paddingEnd="@dimen/spacing_medium">
 
     <ImageView
+        android:id="@+id/mainIcon"
+        android:layout_width="@dimen/main_spacing"
+        android:layout_height="@dimen/main_spacing"
+        android:paddingBottom="10dp"/>
+
+    <ImageView
+        android:id="@+id/appLabel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/spacing_xxl"
-        android:padding="@dimen/spacing_xxl"
+        android:padding="@dimen/icon_height"
         app:srcCompat="@drawable/app_name_logo" />
+
+    <TextView
+        android:id="@+id/iconLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/spacing_small"
+        android:paddingEnd="@dimen/spacing_small"
+        android:text="@string/user_icon"
+        android:textAlignment="textStart"
+        android:textSize="@dimen/text_size_auth" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/iconView"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/icon_list_height"
+        android:scrollbars="none" />
+
+    <TextView
+        android:id="@+id/nameLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/spacing_small"
+        android:paddingEnd="@dimen/spacing_small"
+        android:text="@string/name_and_surname"
+        android:textAlignment="textStart"
+        android:textSize="@dimen/text_size_auth" />
+
+    <EditText
+        android:id="@+id/nameInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/negative_spacing_medium"
+        android:ems="10"
+        android:hint="@string/name_hint"
+        android:inputType="text" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="@dimen/spacing_small"
+        android:paddingTop="@dimen/spacing_big"
         android:paddingEnd="@dimen/spacing_small"
         android:text="@string/login"
         android:textAlignment="textStart"
@@ -37,8 +79,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="@dimen/spacing_small"
-        android:paddingEnd="@dimen/spacing_small"
         android:paddingTop="@dimen/spacing_big"
+        android:paddingEnd="@dimen/spacing_small"
         android:text="@string/password"
         android:textAlignment="textStart"
         android:textSize="@dimen/text_size_auth" />
@@ -58,13 +100,13 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/spacing_big"
         android:background="@color/grey"
-        android:textColor="@color/white"/>
+        android:textColor="@color/white" />
 
     <TextView
         android:id="@+id/switchButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/spacing_big"
-        android:text=""
+        android:text="@string/already_registered"
         android:textAlignment="center" />
 </LinearLayout>
