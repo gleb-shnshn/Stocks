@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
+import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -41,6 +42,7 @@ public class SearchActivity extends AppCompatActivity implements StockContainer 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        App.getInstance().setCurrentActivity(this);
         setResult(0);
         setContentView(R.layout.activity_search);
         initializeViews();
@@ -49,6 +51,7 @@ public class SearchActivity extends AppCompatActivity implements StockContainer 
     @Override
     protected void onStop() {
         App.getInstance().getDataHandler().setQuery("");
+        App.getInstance().setCurrentActivity(null);
         super.onStop();
     }
 

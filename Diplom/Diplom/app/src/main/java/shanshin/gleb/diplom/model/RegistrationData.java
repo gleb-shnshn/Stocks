@@ -12,21 +12,14 @@ public class RegistrationData {
     @SerializedName("icon")
     String icon;
 
-    @SerializedName("email")
-    String email;
-
     @SerializedName("name")
     String name;
 
-    @SerializedName("surname")
-    String surname;
 
-    public RegistrationData(String login, String password, String icon, String email, String name, String surname) {
+    public RegistrationData(String login, String password, String icon, String name) {
         this.login = login;
         this.password = password;
         this.icon = icon;
-        this.email = email;
         this.name = name;
-        this.surname = surname;
     }
 }

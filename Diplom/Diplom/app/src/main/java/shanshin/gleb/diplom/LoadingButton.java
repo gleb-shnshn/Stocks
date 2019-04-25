@@ -1,7 +1,10 @@
 package shanshin.gleb.diplom;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.icu.util.MeasureUnit;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -36,7 +39,7 @@ public class LoadingButton extends FrameLayout {
         mTextView.setLayoutParams(textViewParams);
         mTextView.setText(mText);
         mTextView.setTextAlignment(TEXT_ALIGNMENT_CENTER);
-        mTextView.setTypeface(Typeface.DEFAULT_BOLD);
+        mTextView.setTextSize(16f);
         mTextView.setTextColor(getResources().getColor(R.color.white));
 
         addView(mProgressBar);

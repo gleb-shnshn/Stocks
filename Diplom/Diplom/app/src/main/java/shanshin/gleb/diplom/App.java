@@ -2,13 +2,13 @@ package shanshin.gleb.diplom;
 
 import android.app.Application;
 import android.content.Intent;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.File;
 import java.io.IOException;
 
+import androidx.appcompat.app.AppCompatActivity;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
@@ -31,6 +31,7 @@ public class App extends Application {
     private GeneralUtils utils;
     private MapStockUtils mapUtils;
     private ErrorHandler errorHandler;
+    private AppCompatActivity currentActivity;
 
     public BottomDialogHandler getDialogHandler() {
         return dialogHandler;
@@ -102,5 +103,13 @@ public class App extends Application {
 
     public DataHandler getDataHandler() {
         return sharedPrefsHandler;
+    }
+
+    public AppCompatActivity getCurrentActivity() {
+        return currentActivity;
+    }
+
+    public void setCurrentActivity(AppCompatActivity currentActivity) {
+        this.currentActivity = currentActivity;
     }
 }

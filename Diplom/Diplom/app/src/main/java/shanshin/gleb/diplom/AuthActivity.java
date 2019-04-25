@@ -195,10 +195,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         String login = loginField.getText().toString();
         String password = passwordField.getText().toString();
         String icon = getString(R.string.icon_url) + iconUrl;
-        String email = "stub@stub.com";
-        String nameAndSurname = nameField.getText().toString();
-
-        return new RegistrationData(login, password, icon, email, nameAndSurname.substring(0, 2), nameAndSurname.substring(2));
+        String name = nameField.getText().toString();
+        return new RegistrationData(login, password, icon, name);
     }
 
     @Override

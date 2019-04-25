@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+import com.github.twocoffeesoneteam.glidetovectoryou.GlideApp;
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -141,25 +143,26 @@ public class StockCaseActivity extends AppCompatActivity implements StockContain
             public void onFailure(Call<InfoResponse> call, Throwable t) {
                 cancelSkeletonLoading();
                 swipeRefreshLayout.setRefreshing(false);
-                App.getInstance().getUtils().showError(getString(R.string.no_connection));
+                App.getInstance().setCurrentActivity(StockCaseActivity.this);
+                App.getInstance().getErrorHandler().handleNoConnection();
 
             }
         });
     }
 
     private void fillActivityView(InfoResponse infoResponse) {
-        nameView.setText(infoResponse.name + infoResponse.surname);
+        nameView.setText(infoResponse.name);
         GlideToVectorYou.justLoadImage(this, Uri.parse(getString(R.string.server_url) + infoResponse.icon), icon);
-        balanceView.setText(App.getInstance().getUtils().formatFloat(2, infoResponse.balance) + getString(R.string.currency)+" ");
+        balanceView.setText(App.getInstance().getUtils().formatFloat(2, infoResponse.balance) + getString(R.string.currency) + " ");
         stocksRecyclerView.setAdapter(stockAdapter);
         stockAdapter.setStocks(App.getInstance().getMapUtils().mapStocksToUniversalStocks(infoResponse.stocks, null));
         noStocks.setVisibility(stockAdapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
-        setExpandingAndScrollingEnabled(stockAdapter.getItemCount()<7);
+        setExpandingAndScrollingEnabled(stockAdapter.getItemCount() < 7);
     }
 
     private void setExpandingAndScrollingEnabled(boolean enabled) {
         CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) findViewById(R.id.appbarlayout).getLayoutParams();
-        ((AppBarLayoutBehavior)layoutParams.getBehavior()).setScrollBehavior(!enabled);
+        ((AppBarLayoutBehavior) layoutParams.getBehavior()).setScrollBehavior(!enabled);
 
     }
 
@@ -194,6 +197,8 @@ public class StockCaseActivity extends AppCompatActivity implements StockContain
 
     @Override
     public void onStockLongClick(UniversalStock stock) {
+        if (isIntentCreated)
+            return;
         Intent intent = new Intent(this, ChartActivity.class);
         intent.putExtra("stockId", stock.id);
         intent.putExtra("priceDelta", stock.deltaField);
@@ -201,6 +206,7 @@ public class StockCaseActivity extends AppCompatActivity implements StockContain
         intent.putExtra("priceEnd", stock.priceEndField);
         intent.putExtra("redOrGreen", stock.redOrGreen);
         startActivity(intent);
+        isIntentCreated = true;
     }
 
     @Override
@@ -219,5 +225,11 @@ public class StockCaseActivity extends AppCompatActivity implements StockContain
 
     public void switchToTransactionHistory(View view) {
         switchToSearchActivity(SearchActivity.TRANSACTION_HISTORY);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        App.getInstance().setCurrentActivity(null);
     }
 }

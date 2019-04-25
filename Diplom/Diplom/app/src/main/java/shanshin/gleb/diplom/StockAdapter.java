@@ -25,7 +25,7 @@ import shanshin.gleb.diplom.model.UniversalStock;
 public class StockAdapter extends PagedListAdapter<UniversalStock, StockAdapter.ViewHolder> {
     private StockContainer stockContainer;
     private LayoutInflater inflater;
-    private ArrayList<UniversalStock> stocks;
+    private ArrayList<UniversalStock> stocks = new ArrayList<>();
     private int downColor, upColor, greyColor;
     private Drawable upDrawable, downDrawable;
     private Integer activityCode = null;
@@ -98,8 +98,10 @@ public class StockAdapter extends PagedListAdapter<UniversalStock, StockAdapter.
     }
 
     public void setStocks(ArrayList<UniversalStock> newStocks) {
-        notifyDataSetChanged();
-        this.stocks = newStocks;
+        if (newStocks != null) {
+            this.stocks = newStocks;
+            notifyDataSetChanged();
+        }
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

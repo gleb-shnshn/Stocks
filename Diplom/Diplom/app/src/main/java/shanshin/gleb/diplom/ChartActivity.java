@@ -4,12 +4,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,7 +19,6 @@ import shanshin.gleb.diplom.handlers.GeneralUtils;
 import shanshin.gleb.diplom.model.ChartData;
 import shanshin.gleb.diplom.responses.StockHistoryResponse;
 
-import com.bumptech.glide.Glide;
 import com.github.mikephil.charting.charts.CandleStickChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -53,13 +50,19 @@ public class ChartActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        App.getInstance().setCurrentActivity(this);
         setContentView(R.layout.activity_chart);
 
         initializeProperties();
         initializeOnClickListeners();
         initializeChartProperties();
 
-        updateChart("day");
+        updateChart("total");
+    }
+    @Override
+    protected void onStop() {
+        App.getInstance().setCurrentActivity(null);
+        super.onStop();
     }
 
     private void initializeChartProperties() {
@@ -134,7 +137,7 @@ public class ChartActivity extends AppCompatActivity implements View.OnClickList
 
         progressBar = findViewById(R.id.progress);
 
-        currentChecked = findViewById(R.id.day);
+        currentChecked = findViewById(R.id.total);
         currentChecked.setChecked(true);
     }
 
@@ -160,7 +163,8 @@ public class ChartActivity extends AppCompatActivity implements View.OnClickList
 
             @Override
             public void onFailure(Call<StockHistoryResponse> call, Throwable t) {
-                App.getInstance().getUtils().showError(getString(R.string.no_connection));
+                setProgressEnabled(false);
+                App.getInstance().getErrorHandler().handleNoConnection();
             }
         });
     }

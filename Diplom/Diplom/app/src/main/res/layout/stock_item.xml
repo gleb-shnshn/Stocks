@@ -86,6 +86,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/spacing_big"
         android:layout_marginBottom="@dimen/spacing_medium"
+        android:textAlignment="textEnd"
         android:text=""
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/text_size_premedium"
