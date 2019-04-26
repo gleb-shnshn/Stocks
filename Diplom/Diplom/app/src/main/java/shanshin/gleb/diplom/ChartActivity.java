@@ -57,8 +57,8 @@ public class ChartActivity extends AppCompatActivity implements View.OnClickList
         initializeOnClickListeners();
         initializeChartProperties();
 
-        updateChart("total");
-    }
+        updateChart("total", currentChecked.getId());
+}
     @Override
     protected void onStop() {
         App.getInstance().setCurrentActivity(null);
@@ -153,11 +153,11 @@ public class ChartActivity extends AppCompatActivity implements View.OnClickList
         redOrGreen = getIntent().getBooleanExtra("redOrGreen", false);
     }
 
-    private void updateChart(final String range) {
+    private void updateChart(final String range, final int newId) {
         App.getInstance().getRetrofit().create(StocksApi.class).getStockHistory(stockId, range).enqueue(new Callback<StockHistoryResponse>() {
             @Override
             public void onResponse(Call<StockHistoryResponse> call, Response<StockHistoryResponse> response) {
-                initializeStock(response);
+                initializeStock(response, newId);
                 setProgressEnabled(false);
             }
 
@@ -169,7 +169,7 @@ public class ChartActivity extends AppCompatActivity implements View.OnClickList
         });
     }
 
-    private void initializeStock(Response<StockHistoryResponse> response) {
+    private void initializeStock(Response<StockHistoryResponse> response, int newId) {
         View stock = findViewById(R.id.stock);
         TextView stockName = stock.findViewById(R.id.stock_name);
         TextView stockCode = stock.findViewById(R.id.stock_count);
@@ -200,10 +200,21 @@ public class ChartActivity extends AppCompatActivity implements View.OnClickList
                 .with(this)
                 .setPlaceHolder(R.drawable.white_circle, R.drawable.white_circle)
                 .load(iconUri, (ImageView) findViewById(R.id.icon));
-        setData(stockResponse.history);
+        if (setData(stockResponse.history)){
+            currentChecked.setChecked(false);
+            currentChecked = findViewById(newId);
+        }
+        else {
+            currentChecked.setChecked(true);
+            ((RadioButton)findViewById(newId)).setChecked(false);
+            App.getInstance().getUtils().showError(getString(R.string.not_enough_data));
+        }
     }
 
-    private void setData(List<ChartData> chartDataList) {
+    private boolean setData(List<ChartData> chartDataList) {
+        if (chartDataList.size()==0){
+            return false;
+        }
         this.chartDataList = chartDataList;
         sortChartDataList(chartDataList);
         ArrayList<CandleEntry> values = new ArrayList<>();
@@ -226,6 +237,7 @@ public class ChartActivity extends AppCompatActivity implements View.OnClickList
         CandleData data = new CandleData(dataSet);
         chart.setData(data);
         chart.invalidate();
+        return true;
     }
 
     private void sortChartDataList(List<ChartData> chartDataList) {
@@ -252,7 +264,6 @@ public class ChartActivity extends AppCompatActivity implements View.OnClickList
         if (view.getId() == currentChecked.getId())
             return;
         setProgressEnabled(true);
-        currentChecked.setChecked(false);
         String range = "";
         switch (view.getId()) {
             case R.id.day:
@@ -274,7 +285,6 @@ public class ChartActivity extends AppCompatActivity implements View.OnClickList
                 range = "total";
                 break;
         }
-        currentChecked = findViewById(view.getId());
-        updateChart(range);
+        updateChart(range, view.getId());
     }
 }

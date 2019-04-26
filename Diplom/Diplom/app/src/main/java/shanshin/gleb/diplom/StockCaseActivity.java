@@ -68,6 +68,7 @@ public class StockCaseActivity extends AppCompatActivity implements StockContain
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stock_case);
+        App.getInstance().setCurrentActivity(StockCaseActivity.this);
         initializeViews();
         setSkeletonLoading();
         getInfoAboutAccount(getString(R.string.use_cached));

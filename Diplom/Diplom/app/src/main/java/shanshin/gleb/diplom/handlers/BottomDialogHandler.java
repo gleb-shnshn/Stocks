@@ -38,13 +38,21 @@ public class BottomDialogHandler {
                     public void run() {
                         try {
                             performRequest(Integer.parseInt(countField.getText().toString()), stockId, context, isBuyOrSell, bottomSheetDialog);
+                        } catch (IOException exception) {
+                            context.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    bottomSheetDialog.hide();
+                                }
+                            });
+                            App.getInstance().getErrorHandler().handleNoConnection();
+                        } finally {
                             context.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     dialogButton.stopLoading();
                                 }
                             });
-                        } catch (IOException ignored) {
                         }
 
                     }

@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import androidx.appcompat.app.AppCompatActivity;
 import okhttp3.Cache;
@@ -54,6 +55,7 @@ public class App extends Application {
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(new ExpiredTokenInterceptor())
                 .cache(new Cache(httpCacheDirectory, 10 * 1024 * 1024))
+                .connectTimeout(30, TimeUnit.SECONDS)
                 .build();
 
         retrofit = new Retrofit.Builder()
@@ -94,7 +96,9 @@ public class App extends Application {
                 AuthSuccessResponse successResponse = response.body();
                 App.getInstance().getDataHandler().saveTokens(successResponse.accessToken, successResponse.refreshToken);
             } else {
-                startActivity(new Intent(this, AuthActivity.class));
+                App.getInstance().getUtils().showError(getString(R.string.sign_in_again));
+                startActivity(new Intent(currentActivity, AuthActivity.class));
+                currentActivity.finish();
             }
         } catch (IOException e) {
             e.printStackTrace();

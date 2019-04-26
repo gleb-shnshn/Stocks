@@ -127,6 +127,10 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void performRequest() {
+        if (isFieldsEmpty()) {
+            App.getInstance().getUtils().showError(getString(R.string.empty_fields));
+            return;
+        }
         showProgress(true);
         getRequestCall().enqueue(new Callback<AuthSuccessResponse>() {
             @Override
@@ -154,6 +158,12 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+    }
+
+    private boolean isFieldsEmpty() {
+        return ((loginField.getText().length() == 0)
+                || (passwordField.getText().length() == 0)
+                || (!isLoginOrRegistration && nameField.getText().length() == 0));
     }
 
     private void showProgress(boolean visible) {
@@ -198,8 +208,5 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         String name = nameField.getText().toString();
         return new RegistrationData(login, password, icon, name);
     }
-
-    @Override
-    public void onBackPressed() {
-    }
+    
 }

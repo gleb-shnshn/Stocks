@@ -14,7 +14,8 @@
         android:roundIcon="@mipmap/main_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".AuthActivity">
+        <activity android:name=".AuthActivity"
+            android:screenOrientation="sensorPortrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,13 +23,16 @@
             </intent-filter>
         </activity>
         <activity
+            android:screenOrientation="sensorPortrait"
             android:name=".StockCaseActivity"
             android:theme="@style/AppTheme" />
         <activity
+            android:screenOrientation="sensorPortrait"
             android:name=".SearchActivity"
             android:theme="@style/AppTheme" />
 
         <activity
+            android:screenOrientation="sensorPortrait"
             android:name=".ChartActivity"
             android:theme="@style/AppTheme" />
     </application>

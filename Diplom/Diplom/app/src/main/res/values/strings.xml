@@ -47,4 +47,7 @@
     <string name="stock_count_not_null">Количество акций должно быть больше нуля</string>
     <string name="stock_count_empty">Введите количество акций</string>
     <string name="try_again">Попробовать снова</string>
+    <string name="empty_fields">Поля не могут быть пустыми</string>
+    <string name="sign_in_again">Войдите заново для продолжения работы</string>
+    <string name="not_enough_data">Недостаточно данных за выбранный период</string>
 </resources>
