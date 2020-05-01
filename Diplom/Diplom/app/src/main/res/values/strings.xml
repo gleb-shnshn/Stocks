@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Diplom</string>
+    <string name="app_name">Stocks</string>
     <string name="server_url">https://stockstore.herokuapp.com/</string>
     <string name="buy">Купить</string>
     <string name="sell">Продать</string>
