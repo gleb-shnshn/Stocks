@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/spacing_small"
+    android:paddingBottom="@dimen/spacing_small">
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="@dimen/spacing_small"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/spacing_small"
+        android:layout_marginTop="@dimen/spacing_small"
+        android:layout_marginBottom="@dimen/spacing_small"
+        android:background="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@id/icon"
+        android:layout_width="?android:actionBarSize"
+        android:layout_height="?android:actionBarSize"
+        android:layout_marginStart="@dimen/spacing_small"
+        android:layout_marginTop="@dimen/spacing_small"
+        android:padding="@dimen/spacing_small"
+        android:src="@drawable/white_circle"
+        app:layout_constraintStart_toEndOf="@id/line"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/stock_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_small"
+        android:layout_marginTop="@dimen/spacing_medium"
+        android:layout_marginEnd="@dimen/spacing_medium"
+        android:text=""
+        android:textColor="@android:color/background_dark"
+        android:textSize="@dimen/text_size_medium"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/icon"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/stock_count"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_small"
+        android:layout_marginEnd="@dimen/spacing_medium"
+        android:layout_marginBottom="@dimen/spacing_medium"
+        android:text=""
+        android:textSize="@dimen/text_size_premedium"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/icon"
+        app:layout_constraintTop_toBottomOf="@+id/stock_name" />
+
+    <TextView
+        android:id="@+id/stock_price"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_medium"
+        android:text=""
+        android:textAlignment="textEnd"
+        android:textColor="@color/grey"
+        android:textSize="@dimen/text_size_medium"
+        app:layout_constraintEnd_toStartOf="@id/stock_price_end"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/stock_price_end"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_medium"
+        android:layout_marginEnd="@dimen/spacing_big"
+        android:text=""
+        android:textColor="@color/medium_grey"
+        android:textSize="@dimen/text_size_medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/stock_delta"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/spacing_big"
+        android:layout_marginBottom="@dimen/spacing_medium"
+        android:textAlignment="textEnd"
+        android:text=""
+        android:textColor="@color/colorPrimary"
+        android:textSize="@dimen/text_size_premedium"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/stock_price" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

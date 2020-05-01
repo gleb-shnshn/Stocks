@@ -1,13 +1,52 @@
-Repo for nsk TFS 2019(spring) student's homeworks
+# Stocks
+Graduation work for Tinkoff Fintech School
 
-Порядок выполнения дом. работ.
-* [Делаете форк](https://gitlab.com/tinkoff-school/android-nsk-spring-2019/forks/new) от главного проекта
-* В настройках репозитория (settings -> members -> invite group) предоставляете доступ к проекту группе android-nsk-spring-2019-mentors. Роль - developer.
-- Если еще не ставили, то устанавливаете git и [настраиваете ssh](https://docs.gitlab.com/ce/ssh/README.html)
-- Клонируете форкнутрй репозиторий к себе на комп (git clone "адрес репозитория"), адрес репозитория можно посмотреть по нажатию на кнопку "Clone" на странице вашего проекта на гитлабе
-- Материалы к каждой дом.работе находятся в отдельных папках (типа Home_work1). Если там уже есть проект, то задание надо выполнять на его базе. Если в папке только описание, то неоходимо самомстоятельно создать проект в папке.
-- Чтобы для каждой дом. работы не делать форк, можно каждую домашку делать в отдельной ветке
-- После выполнения задания, заходите в "Ваш форк на гитлабе"->"Megre Requests"->"New merge request" и в качестве Source branch выбираете ветку, в которой выполнено задание, в Target branch должна быть ветка master. Реквест нужно делать в ВАШ репозиторий с форком (а не в общий репоз, от которого был сделан форк), т.е. source prject и target project должны быть ВАШИМ репозом-форком.
-- Megre Request не нужно закрывать, оставляете его открытым, чтобы все вашт работы были в списке реквестов и мы могли их комментировать. Как только работа будет принята, реквест будет помечен соответствующим образом (будет выставлен аппрув либо лэйбл "Solved")
+#Swagger API 
+https://app.swaggerhub.com/apis/enp0s23/stocks/0.0.1
+
+# Authentication
+The registration and login forms
+
+<img src="https://github.com/gleb270/Stocks/blob/master/Images/Registration.jpg?raw=true" 
+     width="15%"></img>
+<img src="https://github.com/gleb270/Stocks/blob/master/Images/Login.jpg?raw=true" 
+     width="15%"></img>
+	 
+	 
+#StockCase
+All bought stocks and current balance of the user
+
+<img src="https://github.com/gleb270/Stocks/blob/master/Images/StockCase.jpg?raw=true" 
+     width="15%"></img>
+<img src="https://github.com/gleb270/Stocks/blob/master/Images/StockCase_hide.jpg?raw=true" 
+     width="15%"></img>
  
+#Selling 
+The user can sell as many shares as he wants
 
+<img src="https://github.com/gleb270/Stocks/blob/master/Images/Selling.jpg?raw=true" 
+     width="15%"></img>
+
+#History
+The history of buying and selling with searching by name
+
+<img src="https://github.com/gleb270/Stocks/blob/master/Images/History.jpg?raw=true" 
+     width="15%"></img>
+<img src="https://github.com/gleb270/Stocks/blob/master/Images/History_search.jpg?raw=true" 
+     width="15%"></img>
+
+#Shop
+The user can buy as many shares as he wants in shop with searching by name
+
+<img src="https://github.com/gleb270/Stocks/blob/master/Images/Shop.jpg?raw=true" 
+     width="15%"></img>
+<img src="https://github.com/gleb270/Stocks/blob/master/Images/Shop_search.jpg?raw=true" 
+     width="15%"></img>
+
+#Chart
+The user can find out history of price for a particular period
+
+<img src="https://github.com/gleb270/Stocks/blob/master/Images/Statistics_all.jpg?raw=true" 
+     width="15%"></img>
+<img src="https://github.com/gleb270/Stocks/blob/master/Images/Statistics_6_months.jpg?raw=true" 
+     width="15%"></img>

@@ -1,9 +1,0 @@
-<resources>
-    <string name="app_name">Homework_one</string>
-
-    <string name="main_init_button">Init data</string>
-    <string name="main_open_second_button">Open second screen</string>
-
-    <string name="second_title">Second Activity</string>
-
-</resources>
