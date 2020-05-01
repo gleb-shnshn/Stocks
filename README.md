@@ -1,7 +1,7 @@
 # Stocks
 Graduation work for Tinkoff Fintech School
 
-#Swagger API 
+# Swagger API 
 https://app.swaggerhub.com/apis/enp0s23/stocks/0.0.1
 
 # Authentication
